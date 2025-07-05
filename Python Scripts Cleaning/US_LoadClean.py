@@ -190,16 +190,6 @@ def fix_formats(df):
         df['Incident Date'], format='%b-%Y', errors='coerce'
     )
 
-    # First: Clean string representation and convert float-like years
-    df['Model Year'] = df['Model Year'].apply(
-        lambda x: str(int(float(x))) if pd.notnull(x) and str(x).replace('.', '', 1).isdigit() else x
-    )
-
-    # Then convert to datetime (expects 4-digit year like '2021')
-    df['Model Year'] = pd.to_datetime(
-        df['Model Year'], format='%Y', errors='coerce'
-    )
-
     # Convert time strings to time objects
     df['Incident Time (24:00)'] = pd.to_datetime(
         df['Incident Time (24:00)'], format='%H:%M', errors='coerce'

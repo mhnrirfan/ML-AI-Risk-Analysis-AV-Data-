@@ -154,13 +154,20 @@ def standardise_columns(df):
     # Standardize some categorical values
     df['Highest Injury Severity Alleged'] = df['Highest Injury Severity Alleged'].replace({'Fatal': 'Fatality', 'Slight': 'Minor'})
 
+   
     df['SV Pre-Crash Movement'] = df['SV Pre-Crash Movement'].replace({
-        'Turning Left': 'Making Left Turn',
-        'Turning Right': 'Making Right Turn',
+        'Turning left': 'Making Left Turn',
+        'Turning right': 'Making Right Turn',
         'Reversing': 'Backing',
         'Slowing or stopping': 'Stopping',
         'U-turn': 'Making U-Turn',
+        'Chnaging lane to right': 'Changing Lanes',
+        'Chnaging lane to left': 'Changing Lanes',
+        'Going ahead left-hand bend': 'Travelling around Bend',
+        'Going ahead right-hand bend': 'Travelling around Bend',
+        
     })
+
 
     df['Lighting'] = df['Lighting'].replace({
         'Darkness - lights lit': 'Dark - Lighted',
@@ -183,6 +190,7 @@ def standardise_columns(df):
         'Fine no high winds': 'Clear',
         'Fine + high winds': 'Clear',
     })
+
 
     return df
 
