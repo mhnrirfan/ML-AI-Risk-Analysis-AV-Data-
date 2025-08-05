@@ -15,11 +15,11 @@ import os
 
 
 class USDataClass:
-        """
-        Purpose: Class to handle loading, cleaning, and processing US NHSTA AV Incident Data
-        - load_datasets: Load datasets from specified directory
-        - Running the methods for data cleaning pipeline
-        """
+    """
+    Purpose: Class to handle loading, cleaning, and processing US NHSTA AV Incident Data
+    - load_datasets: Load datasets from specified directory
+    - Running the methods for data cleaning pipeline
+    """
     
     def __init__(self, data_dir):
         """
@@ -33,7 +33,7 @@ class USDataClass:
         self.df_ads = None
         self.df_other = None
         self.merged_df = None
-        
+
     def load_datasets(self):
         """
         Purpose: Basic Loading of the datasets found in the data directory folders
@@ -297,10 +297,8 @@ class USDataClass:
         ]
         
         # Drop columns that exist esure they are in the DataFrame
-        cols_to_drop = []
-        for col in cols_to_drop:
-            if col in self.merged_df.columns:
-            cols_to_drop.append(col)
+        cols_to_drop = [col for col in cols_to_drop if col in self.merged_df.columns]
+    
         self.merged_df.drop(columns=cols_to_drop, inplace=True)
         
         print(f"Shape after dropping unnecessary columns: {self.merged_df.shape}")
@@ -425,12 +423,12 @@ class USDataClass:
         print("\nDropping Columns not in STATS19 format")
         columns_to_drop_us_only = [
             'Roadway Description', 'Mileage', 'Property Damage?', 
-            'SV Precrash Speed (MPH)', 'CP Contact Area'
+            'SV Precrash Speed (MPH)', 'CP Contact Area', 'SV Any Air Bags Deployed?', 'SV Was Vehicle Towed?','CP Pre-Crash Movement'
         ]
         existing_cols = []
         for col in columns_to_drop_us_only:
             if col in self.merged_df.columns:
-            existing_cols.append(col)
+                existing_cols.append(col)
         if existing_cols:
             self.merged_df.drop(columns=existing_cols, inplace=True)
         print(f"Final shape: {self.merged_df.shape}") # reduce by 4
@@ -497,7 +495,9 @@ class USDataClass:
             self.drop_us_specific_columns()  # Step 10: Drop US-specific columns
             self.standardize_contact_areas() # Step 11: Standardize contact areas
             self.save_cleaned_data(output_path) # Step 12: Save cleaned data
-            
+            # Output the column names of the cleaned dataset
+            print("\nFinal Column Names:")
+            print(self.merged_df.columns.tolist())
         except Exception as e: # catch any errors 
             print(f"Cleaning Failed: {str(e)}")
             raise
@@ -509,8 +509,8 @@ def main():
     - processor what sets up the data class 
     - functions to fun the all the methods in the class
     """
-    Dataset_Folder_Path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK"  # Where the Datasets are stores
-    Output_Saving_Folder_Path = "'/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv'"  # Update this path
+    Dataset_Folder_Path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US"  # Where the Datasets are stores
+    Output_Saving_Folder_Path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv"  # Update this path
     # making and processing the dataset
     processor = USDataClass(Dataset_Folder_Path)
     # running all the cell code
