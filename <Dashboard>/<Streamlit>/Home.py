@@ -19,7 +19,7 @@ st.markdown(
     <style>
     /* Main app background and text */
     .stApp {
-        background-color: white;
+        background-color: #f9f9f9;
         color: black;
     }
 
@@ -139,13 +139,59 @@ with tabs[2]:
     import plotly.express as px
     import numpy as np
     import pandas as pd
-    from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked
+    from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
 
     st.subheader("📊 Exploratory Data Analysis (EDA)")
 
     # ---------------- Load Data ----------------
     UK_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
     US_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv")
+
+    st.subheader("Dashboard Sections")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    card_style = "padding: 15px; margin: 5px; border: 1.5px solid #D3D3D3; border-radius: 10px; background-color: rgba(200, 200, 200, 0.1); transition: transform 0.2s;"
+
+    with col1:
+        st.markdown(
+            f'<div style="color:Black; {card_style}" '
+            'onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">'
+            '📄 <b>Dataset </b> — Quick overview of the dataset, missing values, and key stats.'
+            '</div>', unsafe_allow_html=True
+        )
+
+    with col2:
+        st.markdown(
+            f'<div style="color:Black; {card_style}" '
+            'onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">'
+            '📊 <b>Exploratory Data Analysis (EDA)</b> — Visualizations and patterns to understand the data.'
+            '</div>', unsafe_allow_html=True
+        )
+
+    with col3:
+        st.markdown(
+            f'<div style="color:Black; {card_style}" '
+            'onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">'
+            '📈 <b>Clustering</b> — Group incidents using unsupervised learning techniques.'
+            '</div>', unsafe_allow_html=True
+        )
+
+    with col4:
+        st.markdown(
+            f'<div style="color:Black; {card_style}" '
+            'onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">'
+            '⚙️ <b>Supervised Learning</b> — Predictive modeling and evaluation for risk analysis.'
+            '</div>', unsafe_allow_html=True
+        )
+
+    with col5:
+        st.markdown(
+            f'<div style="color:Black; {card_style}" '
+            'onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">'
+            '💡 <b>Final Business Insights</b> — Key takeaways and recommendations from the analysis.'
+            '</div>', unsafe_allow_html=True
+        )
+
+
 
     # ---------------- Sidebar Settings ----------------
     with st.sidebar:
@@ -185,11 +231,17 @@ with tabs[2]:
     with col1:
         # Severity Analysis
         st.markdown("### Severity Analysis by Category")
-        severity_figs = plot_severity_stacked(df, [severity_col_choice],
-                                              severity_col='Highest Injury Severity Alleged',
-                                              top_n=top_n, title_prefix=title_prefix)
+
+        severity_figs = plot_severity_stacked(
+            df, 
+            [severity_col_choice],
+            severity_col='Highest Injury Severity Alleged',
+            top_n=top_n, 
+            title_prefix=title_prefix
+        )
+
         for fig in severity_figs:
-            fig.update_traces(marker=dict(color=severity_colors))
+            # Only update layout if needed, colors already set in function
             fig.update_layout(
                 paper_bgcolor='white',
                 plot_bgcolor='white',
@@ -201,13 +253,24 @@ with tabs[2]:
             st.plotly_chart(fig, use_container_width=True)
 
         # Missingness Plot
+        # Missingness Plot
         st.markdown("### Missingness per Column")
         missing_percent = df.isnull().mean() * 100
         missing_df = missing_percent.reset_index()
         missing_df.columns = ['Column', 'MissingPercent']
-        missing_fig = px.bar(missing_df, x='Column', y='MissingPercent', color='Column',
-                             color_discrete_sequence=pastel_rainbow,
-                             template='plotly_white', title=f"Percentage Missing per Column ({title_prefix})")
+        missing_fig = px.line(
+            missing_df,
+            x='Column',
+            y='MissingPercent',
+            markers=True,  # Adds points you can hover over
+            template='plotly_white',
+            title=f"Percentage Missing per Column ({title_prefix})"
+        )
+        missing_fig.update_traces(
+            fill='tozeroy',  # Shading underneath
+            fillcolor='rgba(128, 0, 128, 0.2)',
+            hovertemplate='<b>%{x}</b><br>Missing: %{y:.2f}%<extra></extra>'
+        )
         missing_fig.update_layout(
             paper_bgcolor='white',
             plot_bgcolor='white',
@@ -216,6 +279,8 @@ with tabs[2]:
             yaxis=dict(title_font=dict(color='black'), tickfont=dict(color='black')),
             showlegend=False
         )
+
+        # Show plot
         st.plotly_chart(missing_fig, use_container_width=True)
 
         # Numeric Boxplot & KDE
@@ -232,7 +297,53 @@ with tabs[2]:
             a.xaxis.label.set_color('black')
         fig.tight_layout()
         st.pyplot(fig)
+        
+        # donut chart 
+        if dataset_choice == 'UK':
+            st.markdown("### UK Severity Distribution Donut Chart")
+            severity_data = df['Highest Injury Severity Alleged'].value_counts().reset_index()
+            severity_data.columns = ['Severity', 'Count']
 
+            fig = px.pie(
+                severity_data,
+                names='Severity',
+                values='Count',
+                hole=0.5,
+                color_discrete_sequence=px.colors.sequential.Blues,
+                title="UK Severity Distribution"
+            )
+
+            fig.update_traces(textinfo='percent+label', hoverinfo='label+value')
+            fig.update_layout(
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                font=dict(color='black'),
+                legend=dict(title_font=dict(color='black'), font=dict(color='black'))
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        else:
+            st.markdown("### US Severity Distribution Donut Chart")
+            severity_data = df['Highest Injury Severity Alleged'].value_counts().reset_index()
+            severity_data.columns = ['Severity', 'Count']
+
+            fig = px.pie(
+                severity_data,
+                names='Severity',
+                values='Count',
+                hole=0.5,
+                color_discrete_sequence=px.colors.sequential.Greens,
+                title="US Severity Distribution"
+            )
+
+            fig.update_traces(textinfo='percent+label', hoverinfo='label+value')
+            fig.update_layout(
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                font=dict(color='black'),
+                legend=dict(title_font=dict(color='black'), font=dict(color='black'))
+            )
+            st.plotly_chart(fig, use_container_width=True)
     # ---------------- Right Column ----------------
     with col2:
         # Map
@@ -259,7 +370,79 @@ with tabs[2]:
             st.plotly_chart(us_map_fig, use_container_width=True)
 
         # Radial Hour Plot
-        st.markdown("### Hourly Incident Distribution (Clock)")
+        # Radial Hour Plot for either UK or US
+        import plotly.graph_objects as go
+        import seaborn as sns
+
+        st.markdown("### Hourly Incident Distribution (Interactive Clock)")
+
+        if dataset_choice == 'UK':
+            data_to_plot = UK_data
+        elif dataset_choice == 'US':
+            data_to_plot = US_data
+        else:
+            st.warning("Please select either UK or US dataset.")
+            st.stop()
+
+        # Ensure Incident Time column is hours (0-23)
+        if 'Incident Time (24:00)' in data_to_plot.columns:
+            if not pd.api.types.is_datetime64_any_dtype(data_to_plot['Incident Time (24:00)']):
+                data_to_plot['Incident Time (24:00)'] = pd.to_datetime(
+                    data_to_plot['Incident Time (24:00)'], errors='coerce'
+                ).dt.hour
+            else:
+                data_to_plot['Incident Time (24:00)'] = data_to_plot['Incident Time (24:00)'].dt.hour
+
+            # Counts
+            hour_counts = (
+                data_to_plot['Incident Time (24:00)']
+                .dropna()
+                .astype(int)
+                .value_counts()
+                .reindex(range(24), fill_value=0)
+            )
+
+            # Use the same pastel rainbow colors from Seaborn
+            pastel_colors = sns.color_palette("pastel", 24).as_hex()
+
+            # Create interactive polar bar plot
+            fig = go.Figure()
+
+            fig.add_trace(go.Barpolar(
+                r=hour_counts.values,
+                theta=[h * (360 / 24) for h in range(24)],  # Angles in degrees
+                width=[360 / 24] * 24,
+                marker_color=pastel_colors,
+                marker_line_color='black',
+                marker_line_width=1,
+                opacity=0.9,
+                hovertemplate="<b>%{customdata}:00</b><br>Incidents: %{r}<extra></extra>",
+                customdata=list(range(24))
+            ))
+
+            # Layout for white background & clock-like orientation
+            fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(visible=True, showticklabels=True, ticks='', color='black'),
+                    angularaxis=dict(direction="clockwise", rotation=90,
+                                    tickmode='array',
+                                    tickvals=[h * (360 / 24) for h in range(24)],
+                                    ticktext=[f"{h}:00" for h in range(24)],
+                                    color='black')
+                ),
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                title=dict(text=f"Incident Time Distribution ({dataset_choice})", font=dict(color='black')),
+                font=dict(color='black')
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+        else:
+            st.warning("'Incident Time (24:00)' column not found in dataset.")
+
+        # Time Frequency Plot
+        st.markdown(f"### Time Frequency Plot ({freq_option})")
         date_cols = [col for col in df.columns if 'date' in col.lower() or 'time' in col.lower()]
         if date_cols:
             df[date_cols[0]] = pd.to_datetime(df[date_cols[0]], errors='coerce')
@@ -267,26 +450,6 @@ with tabs[2]:
             df_time['hour'] = df_time[date_cols[0]].dt.hour
             hour_counts = df_time['hour'].value_counts().reindex(range(24), fill_value=0)
 
-            theta = np.linspace(0.0, 2 * np.pi, 24, endpoint=False)
-            radii = hour_counts.values
-            width = 2 * np.pi / 24
-
-            colors = plt.cm.viridis(radii / radii.max()) if radii.max() > 0 else plt.cm.viridis(np.zeros_like(radii))
-            fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize=(6, 6))
-            bars = ax.bar(theta, radii, width=width, bottom=0.0, color=colors, alpha=0.8)
-
-            ax.set_theta_zero_location('N')
-            ax.set_theta_direction(-1)
-            ax.set_xticks(np.linspace(0, 2*np.pi, 24, endpoint=False))
-            ax.set_xticklabels(range(24), color='black')
-            ax.yaxis.label.set_color('black')
-            ax.tick_params(colors='black')
-            ax.set_title(f"Incidents by Hour ({title_prefix})", va='bottom', color='black')
-            fig.tight_layout()
-            st.pyplot(fig)
-
-        # Time Frequency Plot
-        st.markdown(f"### Time Frequency Plot ({freq_option})")
         if date_cols:
             date_col = date_cols[0]
             if freq_option == 'Day':
@@ -296,6 +459,7 @@ with tabs[2]:
                 freq_series = df_time[date_col].dt.month.value_counts().sort_index()
             else:
                 freq_series = df_time[date_col].dt.year.value_counts().sort_index()
+
 
             freq_df = freq_series.reset_index()
             freq_df.columns = [freq_option, 'Counts']
@@ -311,7 +475,16 @@ with tabs[2]:
                 showlegend=False
             )
             st.plotly_chart(freq_fig, use_container_width=True)
-
+        st.markdown("### Hourly Incident Distribution (Interactive Clock)")
+        
+        # Show chart for selected dataset
+        if dataset_choice == 'UK':
+            plot_adas_ads_pie(UK_data, "UK",st)
+        elif dataset_choice == 'US':
+            plot_adas_ads_pie(US_data, "US",st)
+        else:
+            st.warning("Please select either UK or US dataset.")
+            st.stop()
 # ---------------- Clustering Tab ----------------
 with tabs[3]:
     st.subheader("📈 Clustering")

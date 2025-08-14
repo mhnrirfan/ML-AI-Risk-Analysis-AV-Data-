@@ -46,7 +46,6 @@ def plot_uk_choropleth(UK_data, uk_shapefile_path):
     )
     fig.update_geos(fitbounds="locations", visible=False)
     return fig
-
 # ---------------------------
 # US State Choropleth
 # ---------------------------
@@ -67,33 +66,32 @@ def plot_us_state_choropleth(US_data):
     return fig
 
 # ---------------------------
-# California Cities Bar Chart
-# ---------------------------
-def plot_california_cities(US_data, top_n=10):
-    ca_data = US_data[US_data['State'].str.strip().str.upper() == 'CA']
-    city_counts = ca_data['City'].value_counts().head(top_n).reset_index()
-    city_counts.columns = ['City', 'Count']
-    
-    fig = px.bar(
-        city_counts,
-        x='City',
-        y='Count',
-        color='Count',
-        color_continuous_scale='Blues',
-        title=f'Top {top_n} California Cities by Incidents'
-    )
-    return fig
-
-# ---------------------------
 # Severity Analysis for Categorical Columns
 # ---------------------------
 def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury Severity Alleged', top_n=10, title_prefix='Data'):
+    import plotly.express as px
+    import pandas as pd
+    import seaborn as sns
+
+    # Convert all categorical columns to string
+    for col in categorical_columns:
+        if col in df.columns:
+            df[col] = df[col].astype(str)
+
+    # Define a consistent green palette for severity
+    severity_levels = df[severity_col].dropna().unique()
+    severity_levels_sorted = sorted(severity_levels)  # optional: sort for consistent order
+    green_palette = sns.light_palette("green", n_colors=len(severity_levels_sorted), reverse=False).as_hex()
+    severity_color_map = dict(zip(severity_levels_sorted, green_palette))
+
     figs = []
+
     for col in categorical_columns:
         if col not in df.columns or severity_col not in df.columns:
             continue
+
         # Handle comma-separated categories
-        if df[col].dtype == object and df[col].str.contains(',').any():
+        if df[col].str.contains(',').any():
             all_rows = []
             for _, row in df[[col, severity_col]].dropna().iterrows():
                 for val in row[col].split(','):
@@ -101,9 +99,71 @@ def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury 
             plot_df = pd.DataFrame(all_rows)
         else:
             plot_df = df[[col, severity_col]].dropna()
+
+        # Group by category and severity
         grouped = plot_df.groupby([col, severity_col]).size().reset_index(name='Count')
+
+        # Keep top_n categories
         top_items = grouped.groupby(col)['Count'].sum().nlargest(top_n).index
         grouped_top = grouped[grouped[col].isin(top_items)]
-        fig = px.bar(grouped_top, x=col, y='Count', color=severity_col, title=f'{title_prefix}: {col} (Top {top_n})')
+
+        # Create stacked bar chart
+        fig = px.bar(
+            grouped_top,
+            x=col,
+            y='Count',
+            color=severity_col,  # stacked by severity
+            color_discrete_map=severity_color_map,  # consistent green shades
+            title=f'{title_prefix}: {col} (Top {top_n})',
+            custom_data=[grouped_top[col], grouped_top[severity_col], grouped_top['Count']]  # for hover / click
+        )
+
+        # Add hover info
+        fig.update_traces(
+            hovertemplate='<b>%{x}</b><br>Severity: %{customdata[1]}<br>Count: %{customdata[2]}<extra></extra>'
+        )
+
+        # Update layout: white background + font for clarity
+        fig.update_layout(
+            paper_bgcolor='white',
+            plot_bgcolor='white',
+            font=dict(color='black'),
+            legend_title_text='Severity'
+        )
+
         figs.append(fig)
+
     return figs
+
+
+
+
+def plot_adas_ads_pie(df, dataset_label, st):
+    if 'Automation System Engaged?' not in df.columns:
+        st.warning(f"'Automation System Engaged?' column not found in {dataset_label} dataset.")
+        return
+
+    system_counts = df['Automation System Engaged?'].value_counts()
+    pastel_colors = sns.color_palette("pastel", len(system_counts)).as_hex()
+
+    fig = px.pie(
+        names=system_counts.index,
+        values=system_counts.values,
+        color=system_counts.index,
+        color_discrete_sequence=pastel_colors,
+        title=f"ADAS vs ADS Distribution ({dataset_label})",
+        hole=0.3
+    )
+
+    fig.update_traces(
+        textinfo='percent+label',
+        hovertemplate="<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>"
+    )
+
+    fig.update_layout(
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        font=dict(color='black')
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
