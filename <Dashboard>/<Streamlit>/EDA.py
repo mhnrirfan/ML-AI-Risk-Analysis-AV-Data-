@@ -68,7 +68,6 @@ def plot_uk_choropleth(UK_data, uk_shapefile_path, max_points=200_000):
     fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
     
     return fig
-
 # ---------------------------
 # US State Choropleth
 # ---------------------------
