@@ -160,7 +160,7 @@ def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury 
 
 
 
-def plot_adas_ads_pie(df, dataset_label, st):
+def plot_adas_ads_pie(df, dataset_label, st, chart_height=400):
     if 'Automation System Engaged?' not in df.columns:
         st.warning(f"'Automation System Engaged?' column not found in {dataset_label} dataset.")
         return
@@ -185,7 +185,8 @@ def plot_adas_ads_pie(df, dataset_label, st):
     fig.update_layout(
         paper_bgcolor='white',
         plot_bgcolor='white',
-        font=dict(color='black')
+        font=dict(color='black'),
+        height=chart_height  # <-- Added chart height
     )
 
     st.plotly_chart(fig, use_container_width=True)
