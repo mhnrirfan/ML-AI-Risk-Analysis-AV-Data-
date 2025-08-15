@@ -8,6 +8,7 @@ streamlit run Home.py
 # Home.py
 import streamlit as st
 import pandas as pd
+from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
 from EDA import load_csv, prep_dates, fig_missingness, fig_boxplot
 from EDA import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
 
@@ -179,7 +180,7 @@ with tabs[2]:
         freq_option = st.selectbox("Select Time Unit for Frequency Plot", options=['Day', 'Month', 'Year'])
         # ----- for supervised
         st.header("Supervised Settings")
-        supervised_options = ["View Data", "Imputers","Hyperparameters","Results","Explainabilty"]
+        supervised_options = ["View Data", "Imputers","Hyperparameters","Results","Explainability"]
         supervised_col = st.selectbox("Select Process", options=supervised_options)
         model_col = ["Hyperparameters", "Results", "Explainability"]
         algo_col = ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]
@@ -798,8 +799,6 @@ with tabs[3]:
         # Streamlit UI
         # -----------------------------
         st.title("Model Evaluation Dashboard")
-        import streamlit as st
-        from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
         if dataset_choice == "UK":
             flexible_info("Labels: 0-> FATALITY  1-> MINOR 2-> SERIOUS", font_size=10)
         
@@ -870,15 +869,52 @@ with tabs[3]:
 
         st.plotly_chart(fig, use_container_width=True)
 
-    elif supervised_col == "Explainabilty":
-            if supervised_col == "Explainabilty" and chosen_model:
+    import os
+    from PIL import Image
+    import streamlit as st
 
-    # ---------------- Supervised Learning Tab ----------------
-    with tabs[4]:
-        st.subheader("⚙️ Supervised Learning")
+    if supervised_col == "Explainability" and chosen_model:
+        if dataset_choice == "UK":
+            flexible_info("Labels: 0-> FATALITY  1-> MINOR 2-> SERIOUS", font_size=10)
+        
+        elif dataset_choice == "US":
+            flexible_info("Labels: 0-> MINOR  1-> SERIOUS 2-> FATALITY 3-> NO INJURIES REPORTED 4-> MODERATE ", font_size=10)
+
+        st.markdown(f"### **Explainability Plots of {chosen_model} for {dataset_choice}**")
+        
+        shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
+        lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
 
-    # ---------------- Insights Tab ----------------
-    with tabs[5]:
-        st.subheader("💡 Final Business Insights")
-        st.write("Here is the Final Insights section...")
+        if dataset_choice == "UK":
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
+            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_UK.png")
+            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx5.png")
+        elif dataset_choice == "US":
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
+            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_US.png")
+            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx5.png")
+
+    # Function to show image with title
+        def show_plot(title, img_path):
+            st.markdown(f"**{title}**")
+            if os.path.exists(img_path):
+                img = Image.open(img_path)
+                st.image(img, use_container_width=True)  # Automatically adjusts width to container
+            else:
+                st.warning(f"Image not found: {img_path}")
+
+        # Show plots sequentially
+        show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
+        show_plot(f"SHAP SUMMARY Plot of {chosen_model} for {dataset_choice}", shap_summary_path)
+        show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+
+# ---------------- Supervised Learning Tab ----------------
+with tabs[4]:
+    st.subheader("⚙️ Supervised Learning")
+    # Add all content for this tab here, indented one level
+
+# ---------------- Insights Tab ----------------
+with tabs[5]:
+    st.subheader("💡 Final Business Insights")
+    st.write("Here is the Final Insights section...")
