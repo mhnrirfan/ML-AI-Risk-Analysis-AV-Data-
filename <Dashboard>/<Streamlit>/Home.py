@@ -67,8 +67,8 @@ tabs = st.tabs([
     "🏠 Home Page",
     "📄 Dataset Information",
     "📊 Exploratory Data Analysis",
-    "📈 Experimental Clustering",
     "⚙️ Supervised Learning",
+    "📈 Experimental Clustering",
     "💡 Data Insights"
 ])
 
@@ -131,6 +131,8 @@ with tabs[0]:
 with tabs[1]:
     st.subheader("📄 Dataset Summary")
     st.write("Here is the Dataset Summary section...")
+
+    
 # ---------------- Exploratory Data Analysis Tab ----------------
 # ---------------- Exploratory Data Analysis Tab ----------------
 with tabs[2]:
@@ -154,9 +156,9 @@ with tabs[2]:
 
     # ---------------- Sidebar Settings ----------------
     with st.sidebar:
-        st.header("EDA Settings")
         
-        dataset_choice = st.radio("Select Dataset", options=['US', 'UK'])
+        dataset_choice = st.radio("Select Dataset", options=['UK', 'US'])
+        st.header("EDA Settings")
         top_n = st.slider("Top N Categories", min_value=2, max_value=30, value=8)
 
         if dataset_choice == 'UK':
