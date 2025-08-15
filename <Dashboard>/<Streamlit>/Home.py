@@ -19,7 +19,7 @@ st.markdown(
     <style>
     /* Main app background and text */
     .stApp {
-        background-color: #f9f9f9;
+        background-color: #ffffff;
         color: black;
     }
 
@@ -141,7 +141,11 @@ with tabs[2]:
     import pandas as pd
     from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
 
-    st.subheader("📊 Exploratory Data Analysis (EDA)")
+    st.markdown(
+    "<h2 style='font-size:32px; font-weight:900;'>Exploratory Data Analysis (EDA)</h2>",
+    unsafe_allow_html=True
+)
+
 
     # ---------------- Load Data ----------------
     UK_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
@@ -230,6 +234,7 @@ with tabs[2]:
                     <p>{label}</p>
                 </div>
             """, unsafe_allow_html=True)
+    st.markdown("---")  # Thin line divider
 
     # ---------------- Dataset Selection ----------------
     df = UK_data.copy() if dataset_choice == 'UK' else US_data.copy()
@@ -238,122 +243,126 @@ with tabs[2]:
     # ---------------- Color Palettes ----------------
     pastel_rainbow = ['#FFB3BA','#FFDFBA','#FFFFBA','#BAFFC9','#BAE1FF','#D9BAFF','#FFBAE1']
     severity_colors = px.colors.sequential.Blues
-    # -- IMPROVED DASHBOARD LAYOUT
     import streamlit as st
     import pandas as pd
     import plotly.express as px
     import plotly.graph_objects as go
     import seaborn as sns
-    import matplotlib.pyplot as plt
 
-    # --- Define a fixed height for all charts ---
+    # --- Define chart heights ---
     CHART_HEIGHT = 400
-    TOP_CHART_HEIGHT = 350  # Slightly smaller for top row
-    col1, col2, col3 = st.columns([0.25, 0.35, 0.4])  # Equal width columns
+    TOP_CHART_HEIGHT = 350
+    UK_TOP_CHART_HEIGHT = 450  # Slightly taller for UK
 
-    # --- ADAS Pie Chart ---
-    with col1:
-        st.markdown("**ADAS/ADS Distribution**")
-        if dataset_choice == 'UK':
-            plot_adas_ads_pie(UK_data, "UK", st, chart_height=TOP_CHART_HEIGHT)
-        elif dataset_choice == 'US':
-            plot_adas_ads_pie(US_data, "US", st, chart_height=TOP_CHART_HEIGHT)
+    # --- Container for bordered top row ---
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            .bordered-row {
+                border: 2px solid #4B4B4B;
+                border-radius: 10px;
+                padding: 15px;
+                background-color: #ffffff;
+            }
+            .bordered-col {
+                padding: 5px;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # --- Severity Donut Chart ---
-    with col2:
-        st.markdown("**Injury Severity**")
-        if dataset_choice == 'UK':
-            data_to_plot = UK_data
-        elif dataset_choice == 'US':
-            data_to_plot = US_data
-        
-        severity_data = data_to_plot['Highest Injury Severity Alleged'].value_counts().reset_index()
-        severity_data.columns = ['Severity', 'Count']
-        color_seq = px.colors.sequential.Pinkyl if dataset_choice == 'UK' else px.colors.sequential.Greens
-        
-        fig = px.pie(
-            severity_data,
-            names='Severity',
-            values='Count',
-            hole=0.5,
-            color_discrete_sequence=color_seq
-        )
-        fig.update_traces(
-            textinfo='percent+label', 
-            hoverinfo='label+value', 
-            pull=[0.02]*len(severity_data),
-            textfont_size=10  # Smaller text to fit better
-        )
-        fig.update_layout(
-            paper_bgcolor='white',
-            plot_bgcolor='white',
-            font=dict(color='black', size=10),
-            margin=dict(l=20, r=20, t=40, b=20),  # More balanced margins
-            height=TOP_CHART_HEIGHT,
-            width=None,  # Let it auto-size width
-            showlegend=False,
-            autosize=True  # Enable auto-sizing
-        )
-        st.plotly_chart(fig, use_container_width=True, config={'responsive': True, 'displayModeBar': False})
+        # --- 3 Columns ---
+        col1, col2, col3 = st.columns([0.25, 0.35, 0.4])
 
-    # --- Radial Hour Plot ---
-    with col3:
-        st.markdown("**Incidents by Hour**")
-        if 'Incident Time (24:00)' in data_to_plot.columns:
-            # Convert to hour
-            if not pd.api.types.is_datetime64_any_dtype(data_to_plot['Incident Time (24:00)']):
-                data_to_plot['Incident Time (24:00)'] = pd.to_datetime(
-                    data_to_plot['Incident Time (24:00)'], errors='coerce'
-                ).dt.hour
-            else:
-                data_to_plot['Incident Time (24:00)'] = data_to_plot['Incident Time (24:00)'].dt.hour
-            
-            hour_counts = data_to_plot['Incident Time (24:00)'].dropna().astype(int).value_counts().reindex(range(24), fill_value=0)
-            pastel_colors = sns.color_palette("pastel", 24).as_hex()
-            
-            fig = go.Figure()
-            fig.add_trace(go.Barpolar(
-                r=hour_counts.values,
-                theta=[h * (360 / 24) for h in range(24)],
-                width=[360 / 24] * 24,
-                marker_color=pastel_colors,
-                marker_line_color='black',
-                marker_line_width=0.5,  # Thinner lines
-                opacity=0.9,
-                hovertemplate="<b>%{customdata}:00</b><br>Incidents: %{r}<extra></extra>",
-                customdata=list(range(24))
-            ))
+        # --- ADAS Pie Chart ---
+        with col1:
+            st.markdown("**ADAS/ADS/Conventional Distribution**")
+            chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
+            if dataset_choice == 'UK':
+                plot_adas_ads_pie(UK_data, "UK", st, chart_height=chart_height)
+            elif dataset_choice == 'US':
+                plot_adas_ads_pie(US_data, "US", st, chart_height=chart_height)
+
+        # --- Severity Donut Chart ---
+        with col2:
+            st.markdown("**Injury Severity Distribution**")
+            chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
+
+            data_to_plot = UK_data if dataset_choice == 'UK' else US_data
+            severity_data = data_to_plot['Highest Injury Severity Alleged'].value_counts().reset_index()
+            severity_data.columns = ['Severity', 'Count']
+            color_seq = px.colors.sequential.Pinkyl if dataset_choice == 'UK' else px.colors.sequential.Greens
+
+            fig = px.pie(
+                severity_data,
+                names='Severity',
+                values='Count',
+                hole=0.5,
+                color_discrete_sequence=color_seq
+            )
+            fig.update_traces(
+                textinfo='percent+label',
+                hoverinfo='label+value',
+                pull=[0.02]*len(severity_data),
+                textfont_size=10
+            )
             fig.update_layout(
-                polar=dict(
-                    radialaxis=dict(
-                        visible=True, 
-                        showticklabels=True, 
-                        ticks='', 
-                        color='black', 
-                        gridcolor='lightgrey',
-                        tickfont=dict(size=8)  # Smaller tick labels
-                    ),
-                    angularaxis=dict(
-                        direction="clockwise", 
-                        rotation=90,
-                        tickmode='array',
-                        tickvals=[h * (360 / 24) for h in range(0, 24, 3)],  # Show every 3rd hour
-                        ticktext=[f"{h}:00" for h in range(0, 24, 3)],
-                        color='black',
-                        tickfont=dict(size=8)  # Smaller labels
-                    )
-                ),
                 paper_bgcolor='white',
                 plot_bgcolor='white',
                 font=dict(color='black', size=10),
-                margin=dict(l=20, r=20, t=40, b=20),  # Consistent margins
-                height=TOP_CHART_HEIGHT,
-                width=None,  # Let it auto-size width
-                autosize=True  # Enable auto-sizing
+                margin=dict(l=20, r=20, t=40, b=20),
+                height=chart_height,
+                autosize=True,
+                showlegend=False
             )
             st.plotly_chart(fig, use_container_width=True, config={'responsive': True, 'displayModeBar': False})
-        else:
-            st.warning("'Incident Time (24:00)' column not found in dataset.")
+
+        # --- Radial Hour Plot ---
+        with col3:
+            st.markdown("**Incidents by Hour (24 hour)**")
+            chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
+
+            if 'Incident Time (24:00)' in data_to_plot.columns:
+                if not pd.api.types.is_datetime64_any_dtype(data_to_plot['Incident Time (24:00)']):
+                    data_to_plot['Incident Time (24:00)'] = pd.to_datetime(
+                        data_to_plot['Incident Time (24:00)'], errors='coerce'
+                    ).dt.hour
+                else:
+                    data_to_plot['Incident Time (24:00)'] = data_to_plot['Incident Time (24:00)'].dt.hour
+
+                hour_counts = data_to_plot['Incident Time (24:00)'].dropna().astype(int).value_counts().reindex(range(24), fill_value=0)
+                pastel_colors = sns.color_palette("pastel", 24).as_hex()
+
+                fig = go.Figure()
+                fig.add_trace(go.Barpolar(
+                    r=hour_counts.values,
+                    theta=[h * (360 / 24) for h in range(24)],
+                    width=[360 / 24] * 24,
+                    marker_color=pastel_colors,
+                    marker_line_color='black',
+                    marker_line_width=0.5,
+                    opacity=0.9,
+                    hovertemplate="<b>%{customdata}:00</b><br>Incidents: %{r}<extra></extra>",
+                    customdata=list(range(24))
+                ))
+                fig.update_layout(
+                    polar=dict(
+                        radialaxis=dict(visible=True, showticklabels=True, ticks='', color='black', gridcolor='lightgrey', tickfont=dict(size=8)),
+                        angularaxis=dict(direction="clockwise", rotation=90, tickmode='array', tickvals=[h * 15 for h in range(0, 24, 3)],
+                                        ticktext=[f"{h}:00" for h in range(0, 24, 3)], color='black', tickfont=dict(size=8))
+                    ),
+                    paper_bgcolor='white',
+                    plot_bgcolor='white',
+                    font=dict(color='black', size=10),
+                    margin=dict(l=20, r=20, t=40, b=20),
+                    height=chart_height,
+                    autosize=True
+                )
+                st.plotly_chart(fig, use_container_width=True, config={'responsive': True, 'displayModeBar': False})
+            else:
+                st.warning("'Incident Time (24:00)' column not found in dataset.")
 
     # =============================================================================
     # MAIN LAYOUT: Two columns for remaining plots
@@ -367,7 +376,8 @@ with tabs[2]:
     # =============================================================================
     with left_col:
         # Severity Analysis
-        st.markdown("### 📈 Severity Analysis by Category")
+        chart_height = CHART_HEIGHT + 100 if dataset_choice == 'UK' else CHART_HEIGHT
+        st.markdown(f"**Severity Analysis by Category: {severity_col_choice} (Top {top_n})**")
         severity_figs = plot_severity_stacked(
             df, 
             [severity_col_choice],
@@ -383,12 +393,12 @@ with tabs[2]:
                 xaxis=dict(title_font=dict(color='black'), tickfont=dict(color='black')),
                 yaxis=dict(title_font=dict(color='black'), tickfont=dict(color='black')),
                 legend=dict(title_font=dict(color='black'), font=dict(color='black')),
-                height=CHART_HEIGHT
+                height=chart_height
             )
             st.plotly_chart(fig, use_container_width=True)
 
         # Missingness Plot
-        st.markdown("### 🔍 Data Quality Analysis")
+        st.markdown("**Data Quality Analysis**")
         missing_percent = df.isnull().mean() * 100
         missing_df = missing_percent.reset_index()
         missing_df.columns = ['Column', 'MissingPercent']
@@ -399,7 +409,6 @@ with tabs[2]:
             y='MissingPercent',
             markers=True,
             template='plotly_white',
-            title=f"Missing Data by Column ({title_prefix})"
         )
         missing_fig.update_traces(
             fill='tozeroy',
@@ -413,7 +422,7 @@ with tabs[2]:
             xaxis=dict(title_font=dict(color='black'), tickfont=dict(color='black'), tickangle=45),
             yaxis=dict(title_font=dict(color='black'), tickfont=dict(color='black')),
             showlegend=False,
-            height=CHART_HEIGHT
+            height=chart_height
         )
         st.plotly_chart(missing_fig, use_container_width=True)
 
@@ -421,21 +430,15 @@ with tabs[2]:
     # RIGHT COLUMN
     # =============================================================================
     with right_col:
-        # Map
-        st.markdown("### 🗺️ Geographic Distribution")
+        st.markdown("**Geographic Distribution Across Country**")
+
         if dataset_choice == 'UK':
-            st.markdown("**UK Incident Map by Local Authority**")
-            # Placeholder for UK map (uncomment when shapefile is available)
-            # uk_map_fig = plot_uk_choropleth(df, uk_shapefile_path)
-            # uk_map_fig.update_layout(
-            #     paper_bgcolor='white',
-            #     plot_bgcolor='white',
-            #     font=dict(color='black'),
-            #     legend=dict(title_font=dict(color='black'), font=dict(color='black')),
-            #     height=CHART_HEIGHT
-            # )
-            # st.plotly_chart(uk_map_fig, use_container_width=True)
-            st.info("UK map will be displayed when shapefile is available")
+            
+            st.image(
+                "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_incidents_choropleth.png",
+            )
+
+
         else:
             us_map_fig = plot_us_state_choropleth(df)
             us_map_fig.update_layout(
@@ -447,8 +450,10 @@ with tabs[2]:
             )
             st.plotly_chart(us_map_fig, use_container_width=True)
 
+
+
         # Time Frequency Plot
-        st.markdown(f"### ⏰ Temporal Analysis ({freq_option})")
+        st.markdown(f"**Temporal Analysis: ({freq_option})**")
         date_cols = [col for col in df.columns if 'date' in col.lower() or 'time' in col.lower()]
         
         if date_cols:
@@ -479,7 +484,6 @@ with tabs[2]:
                 color=freq_df[freq_option],
                 color_discrete_sequence=color_sequence,
                 template='plotly_white', 
-                title=f"Incident Frequency by {freq_option} ({title_prefix})"
             )
             freq_fig.update_layout(
                 paper_bgcolor='white',
@@ -493,7 +497,7 @@ with tabs[2]:
             st.plotly_chart(freq_fig, use_container_width=True)
       
     # Numeric Distribution
-    st.markdown("### 📊 Numeric Data Distribution")
+    st.markdown("**Numeric Data Distribution**")
     fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     sns.set_style("whitegrid")
         
@@ -516,17 +520,38 @@ with tabs[2]:
     
     fig.tight_layout()
     st.pyplot(fig)  
-# ---------------- Clustering Tab ----------------
-with tabs[3]:
-    st.subheader("📈 Clustering")
-    st.write("Here is the Clustering section...")
 
-# ---------------- Supervised Learning Tab ----------------
-with tabs[4]:
-    st.subheader("⚙️ Supervised Learning")
-    st.write("Here is the Supervised Learning section...")
+    # ---------------- Heatmaps ----------------
+    
+    if dataset_choice == 'UK':
+        st.markdown("**Heatmap Correlation Matrix**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_heatmap.png", use_container_width=True)
+        with col2:
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_top_corr_bar.png", use_container_width=True)
+    
+    
+    elif dataset_choice == 'US':
+        st.markdown("**Top Correlations with Severity**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/US_heatmap.png", use_container_width=True)
+        with col2:
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/US_top_corr_bar.png", use_container_width=True)
 
-# ---------------- Insights Tab ----------------
-with tabs[5]:
-    st.subheader("💡 Final Business Insights")
-    st.write("Here is the Final Insights section...")
+
+    # ---------------- Clustering Tab ----------------
+    with tabs[3]:
+        st.subheader("📈 Clustering")
+        st.write("Here is the Clustering section...")
+
+    # ---------------- Supervised Learning Tab ----------------
+    with tabs[4]:
+        st.subheader("⚙️ Supervised Learning")
+        st.write("Here is the Supervised Learning section...")
+
+    # ---------------- Insights Tab ----------------
+    with tabs[5]:
+        st.subheader("💡 Final Business Insights")
+        st.write("Here is the Final Insights section...")

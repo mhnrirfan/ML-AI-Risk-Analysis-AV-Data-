@@ -31,43 +31,16 @@ import geopandas as gpd
 from shapely.geometry import Point
 import plotly.express as px
 
-def plot_uk_choropleth(UK_data, uk_shapefile_path, max_points=200_000):
-    # Limit to max_points
-    if len(UK_data) > max_points:
-        UK_data = UK_data.sample(n=max_points, random_state=42)
+def plot_uk_choropleth():
+    # Example choropleth figure
+    fig = px.choropleth(...)  # your actual plotting code here
     
-    # Create GeoDataFrame from points
-    geometry = [Point(xy) for xy in zip(UK_data['longitude'], UK_data['latitude'])]
-    gdf_points = gpd.GeoDataFrame(UK_data, geometry=geometry, crs="EPSG:4326")
+    # Save figure to file
+    fig.write_image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_incidents_choropleth.png")
     
-    # Load UK shapefile
-    uk_lads = gpd.read_file(uk_shapefile_path)
-    
-    # Reproject points to match shapefile CRS
-    gdf_points = gdf_points.to_crs(uk_lads.crs)
-    
-    # Spatial join points to local authorities
-    gdf_joined = gpd.sjoin(gdf_points, uk_lads, how="left", predicate="within")
-    
-    # Count incidents per LAD
-    lad_counts = gdf_joined.groupby('LAD25NM').size().reset_index(name='incident_count')
-    
-    # Merge counts back to shapefile
-    choropleth_gdf = uk_lads.merge(lad_counts, how='left', on='LAD25NM').fillna(0)
-    
-    # Plot choropleth
-    fig = px.choropleth(
-        choropleth_gdf,
-        geojson=choropleth_gdf.geometry,
-        locations=choropleth_gdf.index,
-        color='incident_count',
-        color_continuous_scale="Blues",
-        title=f"UK Incidents by Local Authority (Total: {int(choropleth_gdf['incident_count'].sum()):,})"
-    )
-    fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
-    
+    # Return the figure object
     return fig
+
 # ---------------------------
 # US State Choropleth
 # ---------------------------
@@ -83,7 +56,6 @@ def plot_us_state_choropleth(US_data):
         color='Count',
         color_continuous_scale='Blues',
         scope='usa',
-        title=f'US Incidents by State (Total: {state_counts["Count"].sum():,})'
     )
     return fig
 
@@ -136,7 +108,6 @@ def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury 
             y='Count',
             color=severity_col,  # stacked by severity
             color_discrete_map=severity_color_map,  # consistent green shades
-            title=f'{title_prefix}: {col} (Top {top_n})',
             custom_data=[grouped_top[col], grouped_top[severity_col], grouped_top['Count']]  # for hover / click
         )
 
@@ -173,7 +144,6 @@ def plot_adas_ads_pie(df, dataset_label, st, chart_height=400):
         values=system_counts.values,
         color=system_counts.index,
         color_discrete_sequence=pastel_colors,
-        title=f"ADAS vs ADS Distribution ({dataset_label})",
         hole=0.3
     )
 
