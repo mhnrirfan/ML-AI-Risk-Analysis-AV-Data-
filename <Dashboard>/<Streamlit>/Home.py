@@ -184,6 +184,7 @@ with tabs[2]:
         model_col = ["Hyperparameters", "Predicting Severity", "Explainability"]
         algo_col = ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]
 
+
         # Only show the selectbox if the user has chosen a relevant supervised_col
         if supervised_col in model_col:
             chosen_model = st.selectbox("Choose Model", options=algo_col)
@@ -586,6 +587,109 @@ with tabs[3]:
             st.plotly_chart(plot_line_side_by_side(df), use_container_width=True)
             st.markdown("**Imputer Summary**")
             summary_df = imputer_overall_summary(df)
+
+    # Example hyperparameter descriptions
+    param_descriptions = {
+        'Decision Tree': {
+            'max_depth': 'Maximum depth of the tree',
+            'min_samples_split': 'Minimum number of samples required to split a node',
+            'min_samples_leaf': 'Minimum number of samples required at a leaf node',
+            'criterion': 'Function to measure the quality of a split'
+        },
+        'Random Forest': {
+            'n_estimators': 'Number of trees in the forest',
+            'max_depth': 'Maximum depth of each tree',
+            'min_samples_split': 'Minimum samples required to split a node',
+            'min_samples_leaf': 'Minimum samples required at a leaf node',
+            'max_features': 'Number of features to consider when looking for the best split'
+        },
+        'XGBoost': {
+            'n_estimators': 'Number of boosting rounds',
+            'max_depth': 'Maximum depth of a tree',
+            'learning_rate': 'Step size shrinkage to prevent overfitting',
+            'subsample': 'Fraction of samples to use for each tree',
+            'colsample_bytree': 'Fraction of features to use for each tree'
+        },
+        'Logistic Regression': {
+            'C': 'Inverse of regularization strength',
+            'penalty': 'Type of regularization',
+            'solver': 'Algorithm to use in optimization',
+            'l1_ratio': 'Elastic net mixing parameter (only used with elasticnet)'
+        }
+    }
+
+    # Example best parameters per dataset
+    best_params = {
+        'Decision Tree': {
+            'UK': {'min_samples_split': 20, 'min_samples_leaf': 2, 'max_depth': 10, 'criterion': 'gini'},
+            'US': {'min_samples_split': 20, 'min_samples_leaf': 2, 'max_depth': 10, 'criterion': 'gini'}
+        },
+        'Random Forest': {
+            'UK': {'n_estimators': 300, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'max_depth': None},
+            'US': {'n_estimators': 200, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'max_depth': None}
+        },
+        'XGBoost': {
+            'UK': {'subsample': 1.0, 'n_estimators': 200, 'max_depth': 6, 'learning_rate': 0.1, 'colsample_bytree': 0.9},
+            'US': {'subsample': 1.0, 'n_estimators': 200, 'max_depth': 6, 'learning_rate': 0.1, 'colsample_bytree': 0.9}
+        },
+        'Logistic Regression': {
+            'UK': {'solver': 'saga', 'penalty': 'elasticnet', 'l1_ratio': 0.5, 'C': 0.01},
+            'US': {'solver': 'saga', 'penalty': 'l2', 'l1_ratio': 0.5, 'C': 1}
+        }
+    }
+
+    param_grids = {
+    'Decision Tree': {
+        'max_depth': [5, 10, 15, None],
+        'min_samples_split': [2, 5, 10, 20],
+        'min_samples_leaf': [1, 2, 4],
+        'criterion': ['gini', 'entropy']
+    },
+    'Random Forest': {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [None, 10, 20],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['sqrt', 'log2']
+    },
+    'XGBoost': {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [3, 6, 9],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'subsample': [0.8, 1.0],
+        'colsample_bytree': [0.8, 1.0]
+    },
+    'Logistic Regression': {
+        'C': [0.01, 0.1, 1, 10],
+        'penalty': ['l1', 'l2', 'elasticnet'],
+        'solver': ['lbfgs', 'saga'],
+        'l1_ratio': [0, 0.5, 1]  # only used if penalty='elasticnet'
+    }
+}
+    if supervised_col == "Hyperparameters" and chosen_model:
+
+        # Map the winner params based on dataset_choice and chosen_model
+        winner_params = best_params[chosen_model][dataset_choice]
+        st.markdown(f"**Hyperparameters of {chosen_model} for {dataset_choice}**")
+        # Build table for the chosen model
+        rows = []
+        for param, description in param_descriptions[chosen_model].items():
+            tested_values = param_grids[chosen_model][param]  # all values tested
+            winner = winner_params[param]  # best value
+            rows.append({
+                "Hyperparameter": param,
+                "Description": description,
+                "Tested Values": str(tested_values),  # <-- convert list to string
+                "Best Value": winner
+            })
+
+        df_summary = pd.DataFrame(rows)
+
+        # Display table in Streamlit with light grey background and bold header
+        st.dataframe(
+            df_summary.style.set_properties(**{'background-color': '#f5f5f5', 'color': 'black'})
+                    .set_table_styles([{'selector': 'th', 'props': [('background-color', '#ADD8E6'), ('font-weight', 'bold')]}])
+        )
 
 
 
