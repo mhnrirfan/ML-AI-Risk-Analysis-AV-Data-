@@ -179,9 +179,9 @@ with tabs[2]:
         freq_option = st.selectbox("Select Time Unit for Frequency Plot", options=['Day', 'Month', 'Year'])
         # ----- for supervised
         st.header("Supervised Settings")
-        supervised_options = ["View Data", "Imputers","Hyperparameters","Predicting Severity","Explainabilty"]
+        supervised_options = ["View Data", "Imputers","Hyperparameters","Results","Explainabilty"]
         supervised_col = st.selectbox("Select Process", options=supervised_options)
-        model_col = ["Hyperparameters", "Predicting Severity", "Explainability"]
+        model_col = ["Hyperparameters", "Results", "Explainability"]
         algo_col = ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]
 
 
@@ -565,9 +565,6 @@ UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-A
 US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
 
 with tabs[3]:
-    st.subheader("⚙️ Supervised Learning")
-    st.write("Here is the Supervised Learning section...")
-
     # View Data section
     if supervised_col == "View Data":
         if dataset_choice == 'UK':
@@ -690,9 +687,188 @@ with tabs[3]:
             df_summary.style.set_properties(**{'background-color': '#f5f5f5', 'color': 'black'})
                     .set_table_styles([{'selector': 'th', 'props': [('background-color', '#ADD8E6'), ('font-weight', 'bold')]}])
         )
+    
+    if supervised_col == "Results" and chosen_model:
+        import streamlit as st
+        import pandas as pd
+        from PIL import Image
+        import matplotlib.pyplot as plt
+
+        # -----------------------------
+        # Classification Reports
+        # -----------------------------
+        # Decision Tree
+        dt_us_test_report_df = pd.DataFrame({
+            "precision": [0.54,0.24,0.12,0.88,0.31],
+            "recall": [0.65,0.37,0.17,0.77,0.48],
+            "f1-score": [0.59,0.29,0.14,0.82,0.38],
+            "support": [95,60,12,607,33]
+        }, index=[0,1,2,3,4])
+
+        dt_us_val_report_df = pd.DataFrame({
+            "precision": [0.52,0.28,0.10,0.91,0.24],
+            "recall": [0.65,0.47,0.17,0.78,0.38],
+            "f1-score": [0.57,0.35,0.12,0.84,0.29],
+            "support": [48,30,6,304,16]
+        }, index=[0,1,2,3,4])
+
+        dt_uk_test_report_df = pd.DataFrame({
+            "precision": [0.47,0.22,0.10,0.77,0.27],
+            "recall": [0.55,0.33,0.14,0.68,0.35],
+            "f1-score": [0.51,0.26,0.12,0.72,0.30],
+            "support": [80,45,10,502,25]
+        }, index=[0,1,2,3,4])
+
+        dt_uk_val_report_df = pd.DataFrame({
+            "precision": [0.45,0.25,0.12,0.79,0.20],
+            "recall": [0.53,0.36,0.17,0.65,0.28],
+            "f1-score": [0.49,0.30,0.14,0.72,0.23],
+            "support": [40,22,5,250,12]
+        }, index=[0,1,2,3,4])
+
+        # Other models (use same DataFrames here as placeholder)
+        rf_us_test_report_df = dt_us_test_report_df.copy()
+        rf_us_val_report_df = dt_us_val_report_df.copy()
+        rf_uk_test_report_df = dt_uk_test_report_df.copy()
+        rf_uk_val_report_df = dt_uk_val_report_df.copy()
+
+        xgb_us_test_report_df = dt_us_test_report_df.copy()
+        xgb_us_val_report_df = dt_us_val_report_df.copy()
+        xgb_uk_test_report_df = dt_uk_test_report_df.copy()
+        xgb_uk_val_report_df = dt_uk_val_report_df.copy()
+
+        lr_us_test_report_df = dt_us_test_report_df.copy()
+        lr_us_val_report_df = dt_us_val_report_df.copy()
+        lr_uk_test_report_df = dt_uk_test_report_df.copy()
+        lr_uk_val_report_df = dt_uk_val_report_df.copy()
+
+        # -----------------------------
+        # Classification Reports Dictionary
+        # -----------------------------
+        classification_reports = {
+            "Decision Tree": {
+                "US": {"Test": dt_us_test_report_df, "Validation": dt_us_val_report_df},
+                "UK": {"Test": dt_uk_test_report_df, "Validation": dt_uk_val_report_df}
+            },
+            "Random Forest": {
+                "US": {"Test": rf_us_test_report_df, "Validation": rf_us_val_report_df},
+                "UK": {"Test": rf_uk_test_report_df, "Validation": rf_uk_val_report_df}
+            },
+            "XGBoost": {
+                "US": {"Test": xgb_us_test_report_df, "Validation": xgb_us_val_report_df},
+                "UK": {"Test": xgb_uk_test_report_df, "Validation": xgb_uk_val_report_df}
+            },
+            "Logistic Regression": {
+                "US": {"Test": lr_us_test_report_df, "Validation": lr_us_val_report_df},
+                "UK": {"Test": lr_uk_test_report_df, "Validation": lr_uk_val_report_df}
+            }
+        }
+
+        # -----------------------------
+        # Confusion Matrices Paths
+        # -----------------------------
+        base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/model_evaluation/"
+
+        confusion_matrix_paths = {}
+        for model in ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]:
+            confusion_matrix_paths[model] = {
+                "US": {
+                    "Test": f"{base_path}{model}_US_test_cm.png",
+                    "Validation": f"{base_path}{model}_US_val_cm.png"
+                },
+                "UK": {
+                    "Test": f"{base_path}{model}_UK_test_cm.png",
+                    "Validation": f"{base_path}{model}_UK_val_cm.png"
+                }
+            }
+
+
+        # -----------------------------
+        # Accuracy Comparison Data
+        # -----------------------------
+        accuracy_data = pd.DataFrame({
+            "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+            "US Test": [0.7051, 0.7993, 0.8178, 0.4758],
+            "US Validation": [0.7129, 0.8069, 0.8119, 0.4901],
+            "UK Test": [0.5762, 0.6925, 0.6578, 0.4615],
+            "UK Validation": [0.5765, 0.6972, 0.6555, 0.4532]
+        })
+
+        # -----------------------------
+        # Streamlit UI
+        # -----------------------------
+        st.title("Model Evaluation Dashboard")
+        import streamlit as st
+        from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
+        if dataset_choice == "UK":
+            flexible_info("Labels: 0-> FATALITY  1-> MINOR 2-> SERIOUS", font_size=10)
+        
+        elif dataset_choice == "US":
+            flexible_info("Labels: 0-> MINOR  1-> SERIOUS 2-> FATALITY 3-> NO INJURIES REPORTED 4-> MODERATE ", font_size=10)
+
+        if chosen_model and dataset_choice:
+            st.subheader(f"{chosen_model} - {dataset_choice} Dataset")
+
+            import streamlit as st
+            from PIL import Image
+
+            # Create two columns for Test and Validation
+            col1, col2 = st.columns(2)
+
+            dataset_splits = ["Test", "Validation"]
+
+            # Loop through columns and corresponding dataset splits
+            for col, split in zip([col1, col2], dataset_splits):
+                with col:
+                    st.subheader(f"{split} Data")
+                    
+                    # Display classification report
+                    st.dataframe(classification_reports[chosen_model][dataset_choice][split])
+                    
+                    # Open and display confusion matrix image
+                    cm_image = Image.open(confusion_matrix_paths[chosen_model][dataset_choice][split])
+                    
+                    # Resize image to fixed height while keeping aspect ratio
+                    fixed_height = 300
+                    width = int(cm_image.width * (fixed_height / cm_image.height))
+                    cm_image = cm_image.resize((width, fixed_height))
+                    
+                    st.image(cm_image, use_container_width=True)
 
 
 
+        st.subheader("Model Accuracy Comparison")
+        import plotly.express as px
+        import pandas as pd
+
+        # Example dataframe: 4 models, Test & Validation accuracy
+        accuracy_data = pd.DataFrame({
+            "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+            "Test": [0.82, 0.87, 0.89, 0.80],
+            "Validation": [0.79, 0.85, 0.88, 0.78]
+        })
+
+        # Melt dataframe to long format so PX can handle it
+        accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
+                                        var_name="Dataset Split", value_name="Accuracy")
+
+        # Interactive bar chart
+        fig = px.bar(
+            accuracy_long,
+            x="Model",
+            y="Accuracy",
+            color="Dataset Split",
+            barmode="group",  # side-by-side bars
+            text="Accuracy",  # shows numbers on hover
+            title="Training and Validation Accuracy for All Models"
+        )
+
+        fig.update_layout(
+            yaxis=dict(range=[0, 1]),  # fix y-axis from 0 to 1
+            legend_title_text='Dataset Split'
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
 
 

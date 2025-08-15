@@ -1,0 +1,12 @@
+{
+    "model_name": "XGBoost",
+    "country": "UK",
+    "train_accuracy": 0.7616343240151713,
+    "test_accuracy": 0.6577816460860578,
+    "train_precision": 0.7591126605672632,
+    "test_precision": 0.6615900366186457,
+    "train_recall": 0.7616343240151713,
+    "test_recall": 0.6577816460860578,
+    "train_f1": 0.7546296462932087,
+    "test_f1": 0.6585151350852594
+}
