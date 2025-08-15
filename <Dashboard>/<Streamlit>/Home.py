@@ -9,6 +9,7 @@ streamlit run Home.py
 import streamlit as st
 import pandas as pd
 from EDA import load_csv, prep_dates, fig_missingness, fig_boxplot
+from EDA import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
 
 # ---------------- Page Config ----------------
 st.set_page_config(layout="wide", page_title="ML-AI Dashboard")
@@ -178,8 +179,16 @@ with tabs[2]:
         freq_option = st.selectbox("Select Time Unit for Frequency Plot", options=['Day', 'Month', 'Year'])
         # ----- for supervised
         st.header("Supervised Settings")
-        supervised_options = ["View Data", "Imputers","Hyperparameters","Models","Explainabilty"]
+        supervised_options = ["View Data", "Imputers","Hyperparameters","Predicting Severity","Explainabilty"]
         supervised_col = st.selectbox("Select Process", options=supervised_options)
+        model_col = ["Hyperparameters", "Predicting Severity", "Explainability"]
+        algo_col = ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]
+
+        # Only show the selectbox if the user has chosen a relevant supervised_col
+        if supervised_col in model_col:
+            chosen_model = st.selectbox("Choose Model", options=algo_col)
+
+
 
     st.markdown(
     "<h5 style='margin-top:0;'>Key Risk Metrics</h5>", 
@@ -547,22 +556,41 @@ with tabs[2]:
 
 
     # ---------------- Clustering Tab ----------------
-    with tabs[3]:
-        st.subheader("⚙️ Supervised Learning")
-        st.write("Here is the Supervised Learning section...")
-        import pandas as pd
-        import streamlit as st
+import pandas as pd
+import streamlit as st
 
-        # Load datasets
-        UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
-        US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
-        if supervised_col == "View Data":
-            if dataset_choice == 'UK':
-                st.write(f"UK shape: {UK_data.shape}")
-                st.dataframe(UK_data.head(50), height=400)  # scrollable table
-            elif dataset_choice == 'US':
-                st.write(f"US shape: {US_data.shape}")
-                st.dataframe(US_data.head(50), height=400)  # scrollable table
+# Load datasets once
+UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
+US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
+
+with tabs[3]:
+    st.subheader("⚙️ Supervised Learning")
+    st.write("Here is the Supervised Learning section...")
+
+    # View Data section
+    if supervised_col == "View Data":
+        if dataset_choice == 'UK':
+            st.write(f"UK shape: {UK_data.shape}")
+            st.dataframe(UK_data.head(50), height=400)  # scrollable table
+        elif dataset_choice == 'US':
+            st.write(f"US shape: {US_data.shape}")
+            st.dataframe(US_data.head(50), height=400)  # scrollable table
+
+    # Imputers section
+    elif supervised_col == "Imputers":
+        if dataset_choice == 'UK':
+            st.write("✅ No missing data in UK dataset")
+        elif dataset_choice == 'US':
+            df = get_imputation_df()
+            st.plotly_chart(plot_bar_side_by_side(df), use_container_width=True)
+            st.plotly_chart(plot_line_side_by_side(df), use_container_width=True)
+            st.markdown("**Imputer Summary**")
+            summary_df = imputer_overall_summary(df)
+
+
+
+
+
 
     # ---------------- Supervised Learning Tab ----------------
     with tabs[4]:
