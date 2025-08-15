@@ -176,7 +176,10 @@ with tabs[2]:
         severity_col_choice = st.selectbox("Select Category for Severity Analysis", options=cat_options)
         numeric_col = st.selectbox("Select Numeric Column for Boxplot/KDE", options=numeric_options)
         freq_option = st.selectbox("Select Time Unit for Frequency Plot", options=['Day', 'Month', 'Year'])
-
+        # ----- for supervised
+        st.header("Supervised Settings")
+        supervised_options = ["View Data", "Imputers","Hyperparameters","Models","Explainabilty"]
+        supervised_col = st.selectbox("Select Process", options=supervised_options)
 
     st.markdown(
     "<h5 style='margin-top:0;'>Key Risk Metrics</h5>", 
@@ -545,13 +548,26 @@ with tabs[2]:
 
     # ---------------- Clustering Tab ----------------
     with tabs[3]:
-        st.subheader("📈 Clustering")
-        st.write("Here is the Clustering section...")
+        st.subheader("⚙️ Supervised Learning")
+        st.write("Here is the Supervised Learning section...")
+        import pandas as pd
+        import streamlit as st
+
+        # Load datasets
+        UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
+        US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
+        if supervised_col == "View Data":
+            if dataset_choice == 'UK':
+                st.write(f"UK shape: {UK_data.shape}")
+                st.dataframe(UK_data.head(50), height=400)  # scrollable table
+            elif dataset_choice == 'US':
+                st.write(f"US shape: {US_data.shape}")
+                st.dataframe(US_data.head(50), height=400)  # scrollable table
 
     # ---------------- Supervised Learning Tab ----------------
     with tabs[4]:
         st.subheader("⚙️ Supervised Learning")
-        st.write("Here is the Supervised Learning section...")
+
 
     # ---------------- Insights Tab ----------------
     with tabs[5]:
