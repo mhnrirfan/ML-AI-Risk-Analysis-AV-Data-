@@ -189,8 +189,10 @@ with tabs[2]:
         # Only show the selectbox if the user has chosen a relevant supervised_col
         if supervised_col in model_col:
             chosen_model = st.selectbox("Choose Model", options=algo_col)
-
-
+        
+        st.header("Clustering")
+        clustering_options = ["View Clustered Data", "K-Means","PCA","TSNE"]
+        clustering_col = st.selectbox("Select Process", options=clustering_options)
 
     st.markdown(
     "<h5 style='margin-top:0;'>Key Risk Metrics</h5>", 
@@ -910,9 +912,66 @@ with tabs[3]:
         show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
 
 # ---------------- Supervised Learning Tab ----------------
+import streamlit as st
+import pandas as pd
+
 with tabs[4]:
-    st.subheader("⚙️ Supervised Learning")
-    # Add all content for this tab here, indented one level
+    import streamlit as st
+    from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
+
+
+    st.subheader("⚙️ Clustering")
+    # Dataset-specific settings
+    if dataset_choice == "UK":
+        flexible_success("UK Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 4565, 1 → 4734, 2 → 13589", alignment="center")
+        if clustering_col == "View Clustered Data":
+            csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
+            df = pd.read_csv(csv_path)
+            st.dataframe(df.head())
+
+        elif clustering_col == "K-Means":
+            st.markdown("**Showing Optimal K for UK dataset**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
+            st.markdown("**Decision Trees showing Split for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
+
+        elif clustering_col == "PCA":
+            st.markdown("**2D PCA for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
+            st.markdown("**3D PCA for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
+
+        elif clustering_col == "TSNE":
+            st.markdown("**2D TSNE for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
+            st.markdown("**3D TSNE for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
+
+    elif dataset_choice == "US":
+        flexible_success("US Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 1970, 1 → 1674, 2 → 233", alignment="center")
+        if clustering_col == "View Clustered Data":
+            csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_cluster_summary.csv"
+            df = pd.read_csv(csv_path)
+            st.dataframe(df.head())
+
+        elif clustering_col == "K-Means":
+            st.markdown("**Showing Optimal K for UK dataset**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
+            st.markdown("**Decision Trees showing Split for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
+
+        elif clustering_col == "PCA":
+            st.markdown("**2D PCA for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
+            st.markdown("**3D PCA for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
+
+        elif clustering_col == "TSNE":
+            st.markdown("**2D TSNE for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
+            st.markdown("**3D TSNE for K=3**")
+            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
+
 
 # ---------------- Insights Tab ----------------
 with tabs[5]:
