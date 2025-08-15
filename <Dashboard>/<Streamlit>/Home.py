@@ -870,7 +870,8 @@ with tabs[3]:
 
         st.plotly_chart(fig, use_container_width=True)
 
-
+    elif supervised_col == "Explainabilty":
+            if supervised_col == "Explainabilty" and chosen_model:
 
     # ---------------- Supervised Learning Tab ----------------
     with tabs[4]:
