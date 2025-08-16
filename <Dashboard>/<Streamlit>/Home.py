@@ -74,16 +74,16 @@ with st.sidebar:
         st.header("EDA Settings")
         top_n = st.slider("Top N Categories", min_value=2, max_value=30, value=8)
 
-        if dataset_choice == 'UK':
+        if dataset_choice == 'US':
             cat_options = ['Make', 'Model', 'ADS Equipped?', 'Automation System Engaged?', 'City', 'State', 
                            'Roadway Type', 'Roadway Surface', 'Lighting', 'Crash With', 
-                           'Highest Injury Severity Alleged', 'SV Pre-Crash Movement', 'SV Contact Area', 
-                           'Weather', 'Country']
+                            'SV Pre-Crash Movement', 'SV Contact Area', 
+                           'Weather']
             numeric_options = [col for col in UK_data.select_dtypes(include='number').columns]
         else:
             cat_options = ['Make', 'Model', 'City', 'State', 'Roadway Type', 'Roadway Surface', 'Lighting', 
-                           'Crash With', 'Highest Injury Severity Alleged', 'SV Pre-Crash Movement', 
-                           'SV Contact Area', 'Weather', 'Country']
+                           'Crash With', 'SV Pre-Crash Movement', 
+                           'SV Contact Area', 'Weather']
             numeric_options = [col for col in US_data.select_dtypes(include='number').columns]
 
         severity_col_choice = st.selectbox("Select Category for Severity Analysis", options=cat_options)
@@ -194,7 +194,7 @@ with tabs[0]:
         - Limited <b>real-world AV crash data</b>; many studies use synthetic datasets.<br>
         - Comparison needed: <b>ADS (fully autonomous)</b> vs <b>ADAS (assisted driving)</b>.<br>
         - <b>SAE Levels of Automation</b>:<br>
-            - 0️⃣ Conventional vehicle<br>
+            - 0️⃣  Conventional vehicle<br>
             - 1️⃣–3️⃣ ADAS: some automation, driver in control<br>
             - 4️⃣–5️⃣ ADS: fully autonomous, no driver
         </div>
@@ -233,7 +233,7 @@ with tabs[0]:
         - <b>ML models predict accident severity:</b><br>
             - 🌳 Decision Tree<br>
             - 🌲 Random Forest<br>
-            - ⚡ XGBoost<br>
+            - 💡 XGBoost<br>
             - 📈 Logistic Regression<br>
         - 🧩 Clustering Methods<br>
         - Black-box models lack transparency → risky for public safety.<br>
@@ -467,8 +467,8 @@ with tabs[2]:
         with col1:
             st.markdown("**ADAS/ADS/Conventional Distribution**")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+                st.write("**UK** Vehicles are all conventional and not stated as ADS/ADAS within data collection pack as hard to know if jaguar is a ads or normal even if model is given ")
+                st.write("**US:** Only ADAS and ADS vehicles, therefore smaller dataset size ")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
             if dataset_choice == 'UK':
                 plot_adas_ads_pie(UK_data, "UK", st, chart_height=chart_height)
@@ -479,8 +479,8 @@ with tabs[2]:
         with col2:
             st.markdown("**Injury Severity Distribution**")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+                st.write("**UK** Collsions are classed as minor whilst which mean no injury reported in not collected or classed as minor")
+                st.write("**US:** Not each accident ends in an injury only 16.9% which makes an already small 4353 dataset even smaller for targeted injury only accidents")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
 
             data_to_plot = UK_data if dataset_choice == 'UK' else US_data
@@ -516,8 +516,8 @@ with tabs[2]:
         with col3:
             st.markdown("**Incidents by Hour (24 hour)**")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+                st.write("**UK** Much Clearer pattern with schooltime/work rush and Post work rush shwoing accidents occuring due to busy traffic and signalling through these areas")
+                st.write("**US:** Generally Higher for Peak times (Morning, Lunch and After work) suprising high for 9pm to 12pm which can still be busier in cities however as the drop from 12am to 6am it is unlikely accidents due to lighting is occuring")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
 
             if 'Incident Time (24:00)' in data_to_plot.columns:
@@ -574,10 +574,68 @@ with tabs[2]:
         # Severity Analysis
         chart_height = CHART_HEIGHT + 100 if dataset_choice == 'UK' else CHART_HEIGHT
         st.markdown(f"**Severity Analysis by Category: {severity_col_choice} (Top {top_n})**")
-        with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+        if dataset_choice =="UK":
+            with st.expander("ℹ️ Insights"):
+                st.markdown(
+                    """
+            - **Make and Model**: Tesla, Jaguar and Ford have the highest fatality rate, whilst Jaguar and Cruise have the most non-injury crashes.  
+            This shows the high proportion of Jaguar vehicles in this dataset.  
 
+            - **ADS Equipped?**: Whether ADAS (Driver Assisted), ADS (Fully Autonomous), or Conventional vehicle  
+
+            - **Automation System Engaged?**: Whether ADS was engaged or not  
+
+            - **City**: City location  
+
+            - **State**: State (and for clarity: England, Scotland, Ireland, Wales in UK data)  
+
+            - **Roadway Type**: Type of road e.g., freeway, dual carriageway, street, etc.  
+
+            - **Roadway Surface**: Wet, Icy, Slush, Clear, etc.  
+
+            - **Lighting**: Level of light: daylight, foggy, dark, dusk, etc.  
+
+            - **Crash With**: Other item involved e.g., Passenger, Car, Pole, Tree, etc.  
+
+            - **SV Pre-Crash Movement**: What vehicle was doing e.g., proceeding straight, turning left, parked  
+
+            - **Weather**: Cloudy, Raining, Clear, Fine winds, etc.  
+
+            - **SV Contact Area**: Area hit on the vehicle  
+
+            - **Country**: US or UK  
+            """
+                )
+
+        else:
+            with st.expander("ℹ️ Insights"):
+                st.markdown(
+                        """
+                - **Make and Model**: Tesla, Jaguar and Ford have the highest fatality rate, whilst Jaguar and Cruise have the most non-injury crashes.  
+                This shows the high proportion of Jaguar vehicles - Ipace which have most severe crashes and least severe crashes.
+
+                - **City and State**: This dataset only have 4 fatalities and one is from Sanfransisco but the rest are nan which is suprising given the importance of those cases as given if state is known the city, road and loaction is neccessary for analysis
+                Other than California, Arizona and Texas also have higher accident rates compared to the other states
+
+                - **State**: State (and for clarity: England, Scotland, Ireland, Wales in UK data)  
+
+                - **Roadway Type**: Type of road e.g., freeway, dual carriageway, street, etc.  
+
+                - **Roadway Surface**: Wet, Icy, Slush, Clear, etc.  
+
+                - **Lighting**: Level of light: daylight, foggy, dark, dusk, etc.  
+
+                - **Crash With**: Other item involved e.g., Passenger, Car, Pole, Tree, etc.  
+
+                - **SV Pre-Crash Movement**: What vehicle was doing e.g., proceeding straight, turning left, parked  
+
+                - **Weather**: Cloudy, Raining, Clear, Fine winds, etc.  
+
+                - **SV Contact Area**: Area hit on the vehicle  
+
+                - **Country**: US or UK  
+                """
+                    )
         severity_figs = plot_severity_stacked(
             df, 
             [severity_col_choice],
@@ -600,8 +658,9 @@ with tabs[2]:
         # Missingness Plot
         st.markdown("**Data Quality Analysis**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+                st.write("**UK** No Missing data for these columns (as dropped the columns due to only 0.1% being missing values) ")
+                st.write("""**US:** High missing value especially for the severity which is the main target value for the machine learning models therefore must be imputed with high accuracy or the dataset will reduce by almost 50%
+                            other categorical data can be imputed easily based on data correlations available eg: road surface based on timing, lighting based on time, state based on city""")
         missing_percent = df.isnull().mean() * 100
         missing_df = missing_percent.reset_index()
         missing_df.columns = ['Column', 'MissingPercent']
@@ -635,8 +694,8 @@ with tabs[2]:
     with right_col:
         st.markdown("**Geographic Distribution Across Country**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+                st.write("**UK** Higher Number of accidents occuring in Birmingham which is suprising given how low London is, this can be due to ")
+                st.write("**US:** Highest in California as epicentre of autonomous vehicle creation (San Francisco) however every state does have values but far smaller representative showing the bias towards californian conditions")
         if dataset_choice == 'UK':
             
             st.image(
@@ -660,8 +719,8 @@ with tabs[2]:
         # Time Frequency Plot
         st.markdown(f"**Temporal Analysis: ({freq_option})**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+            st.write("""**UK** Evenly Distributed for day with peak on friday and suprisingly a dip on the weekend", Additionally the summer and autumn months are higher, the highest number of accidents being in 2019 and decreasing during covid years, even in 2023 there is still a decrease however this can be due to the rise of autonomous features deployed in vehicles on the road but also the reduce reporting""")
+            st.write("""**US** Extremely high peak in the years for 2025 however this can be due greater reporting and more vehicles on the road instead of due to distribution, for us data summer months are lower compared to december and april, and similalrh the weekend is supring lower than the start of the week """)
         date_cols = [col for col in df.columns if 'date' in col.lower() or 'time' in col.lower()]
         
         if date_cols:
@@ -706,9 +765,26 @@ with tabs[2]:
       
     # Numeric Distribution
     st.markdown("**Numeric Data Distribution**")
-    with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+    if dataset_choice == "UK":
+        with st.expander("ℹ️ Insights"):
+                st.write(""" 
+                - **Posted Speed Limit**: Within this dataset majority of the crashes have occured between 30/40 mph on main roads however outliers such as 60 and 70mphs are 
+                suggested with the boxplot method however these are rational accidents which could have occured on the motorway or due to dangerous overspeeding but this also shows 
+                less accidents occur on motorways thus roadway type is a big factor in accidents
+                - **Model Year**: some outliers can be seen which show that vehicles from the 1940-1995s have in accidents however 
+                these should not be removed as the UK law allows for older vehicles to be allowed on the road with MOTs and the number 
+                of these vehicles are quite small given the dataset being 290,000+
+                """)
+    else:
+        with st.expander("ℹ️ Insights"):
+            st.write(""" 
+                - **Report Version**: Most accidents reports only have 1/2 versions however outliers shows that there are accidents that have been amended and added on up to 9 times, whilst this 
+                is not a major issue it can show the data collection process can be problematic and given the data qualty and missingness it can affect the data analysis
+                - **Posted Speed Limit**: Unlike the UK, the speeds are more spread with higher speeds also having accidents however US infrastructure is likely to have more highways and freeways increasing the chance 
+                of an accident occuring (as dataset is drom National Highway Safety Transport Administration)
+                - **Model Year**: most vehicles are between 2014-2026 which is reasonable given AVs are relatively new compared to traditional vehicles, additionally model year 2026 is also being rolled out, 
+                highest accidents occur for models 2020-2023 which is due to how many AVs have been released and how long they have been on the road
+                """)
     fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     sns.set_style("whitegrid")
         
@@ -737,8 +813,10 @@ with tabs[2]:
     if dataset_choice == 'UK':
         st.markdown("**Heatmap Correlation Matrix**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+            st.write("""For UK data, the correlations much lower due to the size of the dataset creating more reliable correlations)
+            - Common correlations such as Make/Model, Lighting/Incident Time, Roadsurface/Weather are higher as excepted (these can be factchecked in severity distrubtion by category plot)
+            - The data also shows postive correlations for severity with where the vehicle was hit, type of road, which state(country eg: england), and time suggesting accidents in england are higher than other countries and severity can increase based on how damaged the vehicle got
+            - Additionally the negative correlations with lighting, city and precrash movementas these can increasing the severity""")
         col1, col2 = st.columns(2)
         with col1:
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_heatmap.png", use_container_width=True)
@@ -749,8 +827,11 @@ with tabs[2]:
     elif dataset_choice == 'US':
         st.markdown("**Top Correlations with Severity**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+            st.write("""For US data, the correlations are much higher compared to the UK dataset and this is due to the smaller datasize and dependent on 2025 data (up to May)
+            creating higher correlations
+            - Common correlations such as ADAS/ADS, Make/Model, Lighting/Incident Time, Roadsurface/Weather are high as excepted (these can be factchecked in severity distrubtion by category plot)
+            - The data also shows postive correlations with ADAS, Model and Incident Year suggesting the severity can be reduced based on ADAS or ADS selection, and vehicle age and roadway type such as motorways have less accidents than streets
+            - Additionally the negative correlations with Speed limit, Make, Surface can increase chances of an accident given higher speed limits, wetter surfaces and certain models have are where more severe accidents occur""")
         col1, col2 = st.columns(2)
         with col1:
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/US_heatmap.png", use_container_width=True)
