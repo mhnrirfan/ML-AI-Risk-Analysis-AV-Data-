@@ -466,6 +466,9 @@ with tabs[2]:
         # --- ADAS Pie Chart ---
         with col1:
             st.markdown("**ADAS/ADS/Conventional Distribution**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
             if dataset_choice == 'UK':
                 plot_adas_ads_pie(UK_data, "UK", st, chart_height=chart_height)
@@ -475,6 +478,9 @@ with tabs[2]:
         # --- Severity Donut Chart ---
         with col2:
             st.markdown("**Injury Severity Distribution**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
 
             data_to_plot = UK_data if dataset_choice == 'UK' else US_data
@@ -509,6 +515,9 @@ with tabs[2]:
         # --- Radial Hour Plot ---
         with col3:
             st.markdown("**Incidents by Hour (24 hour)**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             chart_height = UK_TOP_CHART_HEIGHT if dataset_choice == 'UK' else TOP_CHART_HEIGHT
 
             if 'Incident Time (24:00)' in data_to_plot.columns:
@@ -565,6 +574,10 @@ with tabs[2]:
         # Severity Analysis
         chart_height = CHART_HEIGHT + 100 if dataset_choice == 'UK' else CHART_HEIGHT
         st.markdown(f"**Severity Analysis by Category: {severity_col_choice} (Top {top_n})**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
+
         severity_figs = plot_severity_stacked(
             df, 
             [severity_col_choice],
@@ -583,9 +596,12 @@ with tabs[2]:
                 height=chart_height
             )
             st.plotly_chart(fig, use_container_width=True)
-
+        
         # Missingness Plot
         st.markdown("**Data Quality Analysis**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         missing_percent = df.isnull().mean() * 100
         missing_df = missing_percent.reset_index()
         missing_df.columns = ['Column', 'MissingPercent']
@@ -618,7 +634,9 @@ with tabs[2]:
     # =============================================================================
     with right_col:
         st.markdown("**Geographic Distribution Across Country**")
-
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         if dataset_choice == 'UK':
             
             st.image(
@@ -641,6 +659,9 @@ with tabs[2]:
 
         # Time Frequency Plot
         st.markdown(f"**Temporal Analysis: ({freq_option})**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         date_cols = [col for col in df.columns if 'date' in col.lower() or 'time' in col.lower()]
         
         if date_cols:
@@ -685,6 +706,9 @@ with tabs[2]:
       
     # Numeric Distribution
     st.markdown("**Numeric Data Distribution**")
+    with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
     fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     sns.set_style("whitegrid")
         
@@ -712,6 +736,9 @@ with tabs[2]:
     
     if dataset_choice == 'UK':
         st.markdown("**Heatmap Correlation Matrix**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         col1, col2 = st.columns(2)
         with col1:
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_heatmap.png", use_container_width=True)
@@ -721,6 +748,9 @@ with tabs[2]:
     
     elif dataset_choice == 'US':
         st.markdown("**Top Correlations with Severity**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         col1, col2 = st.columns(2)
         with col1:
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/US_heatmap.png", use_container_width=True)
@@ -753,9 +783,15 @@ with tabs[3]:
             st.write("✅ No missing data in UK dataset")
         elif dataset_choice == 'US':
             df = get_imputation_df()
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.plotly_chart(plot_bar_side_by_side(df), use_container_width=True)
             st.plotly_chart(plot_line_side_by_side(df), use_container_width=True)
             st.markdown("**Imputer Summary**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             summary_df = imputer_overall_summary(df)
 
     # Example hyperparameter descriptions
@@ -841,6 +877,9 @@ with tabs[3]:
         # Map the winner params based on dataset_choice and chosen_model
         winner_params = best_params[chosen_model][dataset_choice]
         st.markdown(f"**Hyperparameters of {chosen_model} for {dataset_choice}**")
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
         # Build table for the chosen model
         rows = []
         for param, description in param_descriptions[chosen_model].items():
@@ -994,9 +1033,15 @@ with tabs[3]:
                     st.subheader(f"{split} Data")
                     
                     # Display classification report
+                    with st.expander("ℹ️ Insights"):
+                        st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                        st.write("You can add explanations, methodology, or links here.")            
                     st.dataframe(classification_reports[chosen_model][dataset_choice][split])
                     
                     # Open and display confusion matrix image
+                    with st.expander("ℹ️ Insights"):
+                        st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                        st.write("You can add explanations, methodology, or links here.")
                     cm_image = Image.open(confusion_matrix_paths[chosen_model][dataset_choice][split])
                     
                     # Resize image to fixed height while keeping aspect ratio
@@ -1018,6 +1063,9 @@ with tabs[3]:
             "Test": [0.82, 0.87, 0.89, 0.80],
             "Validation": [0.79, 0.85, 0.88, 0.78]
         })
+        with st.expander("ℹ️ Insights"):
+            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+            st.write("You can add explanations, methodology, or links here.")
 
         # Melt dataframe to long format so PX can handle it
         accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
@@ -1051,9 +1099,9 @@ with tabs[3]:
         
         elif dataset_choice == "US":
             flexible_info("Labels: 0-> MINOR  1-> SERIOUS 2-> FATALITY 3-> NO INJURIES REPORTED 4-> MODERATE ", font_size=10)
+            
 
         st.markdown(f"### **Explainability Plots of {chosen_model} for {dataset_choice}**")
-        
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
         lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
@@ -1070,6 +1118,9 @@ with tabs[3]:
     # Function to show image with title
         def show_plot(title, img_path):
             st.markdown(f"**{title}**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             if os.path.exists(img_path):
                 img = Image.open(img_path)
                 st.image(img, use_container_width=True)  # Automatically adjusts width to container
@@ -1095,26 +1146,47 @@ with tabs[4]:
     if dataset_choice == "UK":
         flexible_success("UK Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 4565, 1 → 4734, 2 → 13589", alignment="center")
         if clustering_col == "View Clustered Data":
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
             df = pd.read_csv(csv_path)
             st.dataframe(df.head())
 
         elif clustering_col == "K-Means":
             st.markdown("**Showing Optimal K for UK dataset**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
             st.markdown("**Decision Trees showing Split for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")            
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
 
         elif clustering_col == "PCA":
             st.markdown("**2D PCA for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
             st.markdown("**3D PCA for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
 
         elif clustering_col == "TSNE":
             st.markdown("**2D TSNE for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
             st.markdown("**3D TSNE for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
 
     elif dataset_choice == "US":
@@ -1126,19 +1198,37 @@ with tabs[4]:
 
         elif clustering_col == "K-Means":
             st.markdown("**Showing Optimal K for UK dataset**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
             st.markdown("**Decision Trees showing Split for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
 
         elif clustering_col == "PCA":
             st.markdown("**2D PCA for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
             st.markdown("**3D PCA for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
 
         elif clustering_col == "TSNE":
             st.markdown("**2D TSNE for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
             st.markdown("**3D TSNE for K=3**")
+            with st.expander("ℹ️ Insights"):
+                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
+                st.write("You can add explanations, methodology, or links here.")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
 
