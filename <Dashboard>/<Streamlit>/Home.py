@@ -156,10 +156,6 @@ with tabs[0]:
             unsafe_allow_html=True
         )
 
-    st.markdown("---")
-
-
-
     st.markdown("<h2 style='color:#9467bd;'>🚗 About this Project: Risk Analysis of Autonomous Vehicle Accidents</h2>", unsafe_allow_html=True)
         # 5 images side by side
     img_urls = [
@@ -190,7 +186,6 @@ with tabs[0]:
         </div>
         """, unsafe_allow_html=True
     )
-    st.markdown("---")
     # Research Gaps
     st.markdown("<h3 style='color:#ff7f0e;'>🔍 Research Gaps</h3>", unsafe_allow_html=True)
     st.markdown(
@@ -205,7 +200,6 @@ with tabs[0]:
         </div>
         """, unsafe_allow_html=True
     )
-    st.markdown("---")
     # Key Steps
     st.markdown("<h3 style='color:#9467bd;'>🛠️ Key Steps</h3>", unsafe_allow_html=True)
     st.markdown("""
@@ -218,7 +212,6 @@ with tabs[0]:
        <br><b> 6. 📈 Dashboard</b> – summarize findings with insights & recommendations
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("---")
     # Project Aim
     st.markdown("<h3 style='color:#d62728;'>🎯 Project Aim</h3>", unsafe_allow_html=True)
     st.markdown(
@@ -249,7 +242,7 @@ with tabs[0]:
             - 🔹 LIME (Local Interpretable Model-agnostic Explanations)
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("---")
+
 
 with tabs[1]:
     # -----------------------
