@@ -245,41 +245,23 @@ with tabs[0]:
 
 
 with tabs[1]:
-    # -----------------------
-    # Side-by-side Images at the top (full container width)
-    # -----------------------
+    st.subheader("📁 Dataset Information")
+
     if dataset_choice == "UK":
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(
-                "https://media.istockphoto.com/id/2148752786/photo/car-crash-with-two-vehicles-collided-at-traffic-accident-site-on-american-street.jpg?s=612x612&w=0&k=20&c=KSagw-918ODp_uoACRnYTSifKA6GR3yhqGb9sgpdwoM=",
-                use_container_width=True
-            )
-        with col2:
-            st.image(
-                "https://media.istockphoto.com/id/1398986965/photo/heavy-traffic-jam-next-to-bus-lane-in-england-uk.webp?a=1&b=1&s=612x612&w=0&k=20&c=HP8QNQc7axASGywLluGWC8T21s9bfgxeKkaZlhW-6tY=",
-                use_container_width=True
-            )
+        st.markdown("""
+        The UK Road Casualty Dataset is based on **STATS19 police-reported personal injury collisions**.  
+        - Annual & provisional statistics available  
+        - Open dataset: [data.gov.uk](https://www.data.gov.uk/dataset/cb7ae6f0-4be6-4935-9277-47e5ce24a11f/road-accidents-safety-data)  
+        - Detailed data guide: [DfT Road Casualty Statistics Data Guide 2024](https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-road-safety-open-dataset-data-guide-2024.xlsx)  
+        """)
     else:
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(
-                "https://media.istockphoto.com/id/523830845/photo/traffic-mishap.webp?a=1&b=1&s=612x612&w=0&k=20&c=kTtaUOZfzanT3W0qq_G5kk2dpnvhUoPoGQAKfgceUpI=",
-                use_container_width=True
-            )
-        with col2:
-            st.image(
-                "https://media.istockphoto.com/id/1446301560/photo/modern-vehicle-with-ai-assisted-sensors-for-movement.webp?a=1&b=1&s=612x612&w=0&k=20&c=CtPWpGPlua1LTTPts5rCm50A0fxqDU6BxMaw1noIVTI=",
-                use_container_width=True
-            )
+        st.markdown("""
+        The US NHTSA SGO Dataset contains crash data for vehicles with ADS/ADAS systems.  
+        - NHTSA dataset: [NHTSA SGO Dataset](https://www.nhtsa.gov/laws-regulations/standing-general-order-crash-reporting)  
+        - Data element definitions: [SGO 2021-01 Data Element Definitions PDF](https://static.nhtsa.gov/odi/ffdd/sgo-2021-01/Archive-2021-2025/SGO-2021-01_Data_Element_Definitions.pdf)  
+        """)
 
-    # -----------------------
-    # Dataset Information (normal, not collapsible)
-    # -----------------------
-
-    # -----------------------
-    # Column Definitions
-    # -----------------------
+        
     with st.expander("📝 Column Definitions", expanded=False):
             st.markdown("""
             ## Dataset Columns
@@ -341,6 +323,30 @@ with tabs[1]:
                 code = f.read()
             st.code(code, language="python")
 
+    if dataset_choice == "UK":
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(
+                "https://media.istockphoto.com/id/2148752786/photo/car-crash-with-two-vehicles-collided-at-traffic-accident-site-on-american-street.jpg?s=612x612&w=0&k=20&c=KSagw-918ODp_uoACRnYTSifKA6GR3yhqGb9sgpdwoM=",
+                use_container_width=True
+            )
+        with col2:
+            st.image(
+                "https://media.istockphoto.com/id/1398986965/photo/heavy-traffic-jam-next-to-bus-lane-in-england-uk.webp?a=1&b=1&s=612x612&w=0&k=20&c=HP8QNQc7axASGywLluGWC8T21s9bfgxeKkaZlhW-6tY=",
+                use_container_width=True
+            )
+    else:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(
+                "https://media.istockphoto.com/id/523830845/photo/traffic-mishap.webp?a=1&b=1&s=612x612&w=0&k=20&c=kTtaUOZfzanT3W0qq_G5kk2dpnvhUoPoGQAKfgceUpI=",
+                use_container_width=True
+            )
+        with col2:
+            st.image(
+                "https://media.istockphoto.com/id/1446301560/photo/modern-vehicle-with-ai-assisted-sensors-for-movement.webp?a=1&b=1&s=612x612&w=0&k=20&c=CtPWpGPlua1LTTPts5rCm50A0fxqDU6BxMaw1noIVTI=",
+                use_container_width=True
+            )
     
 # ---------------- Exploratory Data Analysis Tab ----------------
 # ---------------- Exploratory Data Analysis Tab ----------------
@@ -731,6 +737,7 @@ UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-A
 US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
 
 with tabs[3]:
+    st.subheader("⚙️ Supervised Learning")
     # View Data section
     if supervised_col == "View Data":
         if dataset_choice == 'UK':
@@ -1083,7 +1090,7 @@ with tabs[4]:
     from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
 
 
-    st.subheader("⚙️ Clustering")
+    st.subheader("📈 Clustering")
     # Dataset-specific settings
     if dataset_choice == "UK":
         flexible_success("UK Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 4565, 1 → 4734, 2 → 13589", alignment="center")
