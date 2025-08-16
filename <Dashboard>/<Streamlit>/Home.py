@@ -12,6 +12,12 @@ from st_flexible_callout_elements import flexible_error, flexible_success, flexi
 from EDA import load_csv, prep_dates, fig_missingness, fig_boxplot
 from EDA import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
 
+
+# ---------------- Load Data ----------------
+UK_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
+US_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv")
+
+
 # ---------------- Page Config ----------------
 st.set_page_config(layout="wide", page_title="ML-AI Dashboard")
 
@@ -62,101 +68,6 @@ st.markdown(
 # ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("📌 Sidebar")
-
-st.title("🚗 ML-AI Risk Analysis Dashboard")
-# ---------------- Tabs Navigation ----------------
-tabs = st.tabs([
-    "🏠 Home Page",
-    "📄 Dataset Information",
-    "📊 Exploratory Data Analysis",
-    "⚙️ Supervised Learning",
-    "📈 Experimental Clustering",
-    "💡 Data Insights"
-])
-
-# ---------------- Home Tab ----------------
-with tabs[0]:
-    st.subheader("Welcome!")
-    st.write(
-        """
-        This **Autonomous Vehicle Incident Analysis Dashboard** allows you to explore AV incident data
-        through multiple analytical lenses.
-        """
-    )
-
-    st.subheader("Dashboard Sections")
-    col1, col2, col3, col4, col5 = st.columns(5)
-
-    with col1:
-        st.markdown(
-            '<div style="background-color:rgba(255, 221, 193, 0.7); color:Black; padding:20px; border-radius:5px; margin-bottom:15px">'
-            '📄 <b>Dataset </b> — Quick overview of the dataset, missing values, and key stats.'
-            '</div>', unsafe_allow_html=True
-        )
-
-    with col2:
-        st.markdown(
-            '<div style="background-color:rgba(193, 225, 255, 0.7); color:Black; padding:20px; border-radius:5px; margin-bottom:15px">'
-            '📊 <b>Exploratory Data Analysis (EDA)</b> — Visualizations and patterns to understand the data.'
-            '</div>', unsafe_allow_html=True
-        )
-
-    with col3:
-        st.markdown(
-            '<div style="background-color:rgba(212, 255, 193, 0.7); color:Black; padding:20px; border-radius:5px; margin-bottom:15px">'
-            '📈 <b>Clustering</b> — Group incidents using unsupervised learning techniques.'
-            '</div>', unsafe_allow_html=True
-        )
-
-    with col4:
-        st.markdown(
-            '<div style="background-color:rgba(255, 250, 193, 0.7); color:Black; padding:25px; border-radius:5px; margin-bottom:15px">'
-            '⚙️ <b>Supervised Learning</b> — Predictive modeling and evaluation for risk analysis.'
-            '</div>', unsafe_allow_html=True
-        )
-
-    with col5:
-        st.markdown(
-            '<div style="background-color:rgba(247, 193, 255, 0.7); color:Black; padding:20px; border-radius:5px; margin-bottom:15px">'
-            '💡 <b>Final Business Insights</b> — Key takeaways and recommendations from the analysis.'
-            '</div>', unsafe_allow_html=True
-        )
-
-    st.markdown("---")
-    st.image(
-        "https://images.unsplash.com/photo-1485463611174-f302f6a5c1c9?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXV0b25vbW91cyUyMHZlaGljbGV8ZW58MHx8MHx8fDA%3D",
-        caption="Autonomous Vehicle Concept",
-        use_container_width=True
-    )
-
-# ---------------- Dataset Summary Tab ----------------
-with tabs[1]:
-    st.subheader("📄 Dataset Summary")
-    st.write("Here is the Dataset Summary section...")
-
-    
-# ---------------- Exploratory Data Analysis Tab ----------------
-# ---------------- Exploratory Data Analysis Tab ----------------
-with tabs[2]:
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import plotly.express as px
-    import numpy as np
-    import pandas as pd
-    from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
-
-    st.markdown(
-    "<h2 style='font-size:32px; font-weight:900;'>Exploratory Data Analysis (EDA)</h2>",
-    unsafe_allow_html=True
-)
-
-
-    # ---------------- Load Data ----------------
-    UK_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
-    US_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv")
-
-
-    # ---------------- Sidebar Settings ----------------
     with st.sidebar:
         
         dataset_choice = st.radio("Select Dataset", options=['UK', 'US'])
@@ -194,6 +105,265 @@ with tabs[2]:
         clustering_options = ["View Clustered Data", "K-Means","PCA","TSNE"]
         clustering_col = st.selectbox("Select Process", options=clustering_options)
 
+st.title("🚗 ML-AI Risk Analysis Dashboard")
+# ---------------- Tabs Navigation ----------------
+tabs = st.tabs([
+    "🏠 Home Page",
+    "📄 Dataset Information",
+    "📊 Exploratory Data Analysis",
+    "⚙️ Supervised Learning",
+    "📈 Experimental Clustering",
+])
+
+# ---------------- Home Tab ----------------
+with tabs[0]:
+    st.markdown("<h2 style='color:#1f77b4;'>Welcome!</h2>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        This **Autonomous Vehicle Incident Analysis Dashboard** allows you to explore AV incident data
+        through multiple analytical lenses. Dive into risk analysis, model explainability, and insightful visualizations.
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<h3 style='color:#ff7f0e;'>👩🏻‍🦱 About Me</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        - **Name:** Mahnoor Iqbal  
+        - **University:** University of Liverpool  
+        - **Background:** BEng Civil Engineering  
+        - **Current:** Final semester MSc Data Science and AI student  
+        - **Projects & Notebooks:** All project Jupyter notebooks and resources can be found on [GitHub](https://github.com/mhnrirfan)  
+        """,
+        unsafe_allow_html=True
+    )
+    st.subheader("Dashboard Sections")
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    sections = [
+        ("🏠 Home Page", "Introduction to Project and Motivation.", "rgba(247, 193, 255, 0.7)"),
+        ("📄 Dataset", "Quick overview of the dataset, missing values, and key stats.", "rgba(255, 221, 193, 0.7)"),
+        ("📊 Exploratory Data Analysis (EDA)", "Visualizations and patterns to understand the data.", "rgba(193, 225, 255, 0.7)"),
+        ("📈 Clustering", "Group incidents using unsupervised learning techniques.", "rgba(212, 255, 193, 0.7)"),
+        ("⚙️ Supervised Learning", "Predictive modeling and evaluation for risk analysis.", "rgba(255, 250, 193, 0.7)")
+    ]
+
+    for col, (title, desc, color) in zip([col1, col2, col3, col4, col5], sections):
+        col.markdown(
+            f'<div style="background-color:{color}; color:black; padding:15px; border-radius:5px; margin-bottom:10px; height:150px">'
+            f'<b>{title}</b><br>{desc}'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown("---")
+
+
+
+    st.markdown("<h2 style='color:#9467bd;'>🚗 About this Project: Risk Analysis of Autonomous Vehicle Accidents</h2>", unsafe_allow_html=True)
+        # 5 images side by side
+    img_urls = [
+        "https://images.unsplash.com/photo-1485463611174-f302f6a5c1c9?w=500",
+        "https://plus.unsplash.com/premium_photo-1741723515540-16a4e71b7d49?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2FyJTIwJTIwYXV0b25vbW91cyUyMHZlaGljbGUlMjBpbWFnZXN8ZW58MHx8MHx8fDA%3D",
+        "https://plus.unsplash.com/premium_photo-1741466913893-f66b4100cb0d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YWklMjBjYXJ8ZW58MHx8MHx8fDA%3D",
+        "https://plus.unsplash.com/premium_photo-1741723515483-363a0857707b?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1pbi1zYW1lLXNlcmllc3wxfHx8ZW58MHx8fHx8",
+        "https://images.unsplash.com/photo-1685984352141-2d66e772b7b1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGNhciUyMGF1dG9ub21vdXN8ZW58MHx8MHx8fDA%3D"
+    ]
+
+    cols = st.columns(5)
+    for c, img_url in zip(cols, img_urls):
+        c.image(img_url, use_container_width=True)
+    # Background & Context
+    st.markdown("<h3 style='color:#1f77b4;'>🌍 Background & Context</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
+        - Transportation evolution: footpaths → railways → aviation.<br>
+        - Road safety is critical: <b>~1.19M deaths annually</b> ⚠️<br>
+        - Passenger vehicles have far higher accident rates than buses, trains, or planes.<br>
+        - Human error causes <b>up to 94% of accidents</b> (speeding, DUI, delayed reactions).<br>
+        - <b>Autonomous Vehicles (AVs)</b> aim to reduce accidents with:<br>
+            - 🛑 Automatic Emergency Braking (AEB)<br>
+            - 🚦 Adaptive Cruise Control (ACC)<br>
+            - ↔️ Lane switching & Automated Parking Systems (APS)<br>
+            - 📸 Sensors: Cameras, LiDAR, Radar, ultrasonic
+        </div>
+        """, unsafe_allow_html=True
+    )
+    st.markdown("---")
+    # Research Gaps
+    st.markdown("<h3 style='color:#ff7f0e;'>🔍 Research Gaps</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
+        - Limited <b>real-world AV crash data</b>; many studies use synthetic datasets.<br>
+        - Comparison needed: <b>ADS (fully autonomous)</b> vs <b>ADAS (assisted driving)</b>.<br>
+        - <b>SAE Levels of Automation</b>:<br>
+            - 0️⃣ Conventional vehicle<br>
+            - 1️⃣–3️⃣ ADAS: some automation, driver in control<br>
+            - 4️⃣–5️⃣ ADS: fully autonomous, no driver
+        </div>
+        """, unsafe_allow_html=True
+    )
+    st.markdown("---")
+    # Key Steps
+    st.markdown("<h3 style='color:#9467bd;'>🛠️ Key Steps</h3>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
+        <b>1. 📚 Literature Review </b>– AV features, accident causes, autonomy levels, ML techniques
+       <br><b>2. 🧹 Data Cleaning</b> – remove outliers, impute missing values, normalize
+        <br><b>3. 📊 Exploratory Data Analysis</b> – distributions, correlations, patterns
+       <br><b> 4. 🤖 Supervised & Unsupervised Models</b> – implement and evaluate
+       <br><b> 5. 🔍 Explainable AI</b> – SHAP & LIME to interpret results
+       <br><b> 6. 📈 Dashboard</b> – summarize findings with insights & recommendations
+        </div>
+        """, unsafe_allow_html=True)
+    st.markdown("---")
+    # Project Aim
+    st.markdown("<h3 style='color:#d62728;'>🎯 Project Aim</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
+        - Risk analysis of <b>real-world AV accident data</b> (ADS vs ADAS).<br>
+        - Apply <b>supervised & unsupervised learning</b> to:<br>
+            - Identify accident causes & severity factors<br>
+            - Evaluate with confusion matrices, precision & recall<br>
+            - Provide insights through an <b>interactive dashboard</b><br>
+            - Employ <b>XAI methods</b> to interpret model decisions
+        </div>
+        """, unsafe_allow_html=True)
+    # Methodology & Explainability
+    st.markdown("<h3 style='color:#2ca02c;'>🧠 Methodology & Explainability</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
+        - <b>ML models predict accident severity:</b><br>
+            - 🌳 Decision Tree<br>
+            - 🌲 Random Forest<br>
+            - ⚡ XGBoost<br>
+            - 📈 Logistic Regression<br>
+        - 🧩 Clustering Methods<br>
+        - Black-box models lack transparency → risky for public safety.<br>
+        - <b>XAI techniques:</b><br>
+            - 🔹 SHAP (SHaply Additive exPlanations)<br>
+            - 🔹 LIME (Local Interpretable Model-agnostic Explanations)
+        </div>
+        """, unsafe_allow_html=True)
+    st.markdown("---")
+
+with tabs[1]:
+    # -----------------------
+    # Side-by-side Images at the top (full container width)
+    # -----------------------
+    if dataset_choice == "UK":
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(
+                "https://media.istockphoto.com/id/2148752786/photo/car-crash-with-two-vehicles-collided-at-traffic-accident-site-on-american-street.jpg?s=612x612&w=0&k=20&c=KSagw-918ODp_uoACRnYTSifKA6GR3yhqGb9sgpdwoM=",
+                use_container_width=True
+            )
+        with col2:
+            st.image(
+                "https://media.istockphoto.com/id/1398986965/photo/heavy-traffic-jam-next-to-bus-lane-in-england-uk.webp?a=1&b=1&s=612x612&w=0&k=20&c=HP8QNQc7axASGywLluGWC8T21s9bfgxeKkaZlhW-6tY=",
+                use_container_width=True
+            )
+    else:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(
+                "https://media.istockphoto.com/id/523830845/photo/traffic-mishap.webp?a=1&b=1&s=612x612&w=0&k=20&c=kTtaUOZfzanT3W0qq_G5kk2dpnvhUoPoGQAKfgceUpI=",
+                use_container_width=True
+            )
+        with col2:
+            st.image(
+                "https://media.istockphoto.com/id/1446301560/photo/modern-vehicle-with-ai-assisted-sensors-for-movement.webp?a=1&b=1&s=612x612&w=0&k=20&c=CtPWpGPlua1LTTPts5rCm50A0fxqDU6BxMaw1noIVTI=",
+                use_container_width=True
+            )
+
+    # -----------------------
+    # Dataset Information (normal, not collapsible)
+    # -----------------------
+
+    # -----------------------
+    # Column Definitions
+    # -----------------------
+    with st.expander("📝 Column Definitions", expanded=False):
+            st.markdown("""
+            ## Dataset Columns
+            Notes: Both datasets have different columns however named in different ways or merged upon several columns or datasets hence here a unified column list 
+            is made to accurate compare the dataset with clarity using python scripts listed below:
+            Defintions of each columns:
+            - Report ID: Unique Identifier of the Accident
+            - Report Version: Version kept as can be multiple reports made adding more information to the incident
+            - Make: Make of the vehicle
+            - Model: Model of the Make
+            - Model Year: Vehicles orginal release year
+            - ADS Equipped?: Whether ADAS (Driver assisted), ADS (Fully Autonomous) or Conventional vehicle
+            - Automation System Engaged?: ADS engaged or not
+            - Incident Date: Date in DD/MM/YYYY format
+            - Incident Time (24:00): Time in HH:MM:SS
+            - City: City Location
+            - State: State (and for clarity: England, Scotland, Ireland, Wales in UK data)
+            - Roadway Type: Type of road eg: freeway, dual carriageaway, street etc
+            - Roadway Surface: Wet, Icy, Slush, Clear etc
+            - Posted Speed Limit (MPH): Speed Limit listed on Road
+            - Lighting: Level of light: daylight, foggy, dark, dusk etc
+            - Crash With: Other item involved eg: Passenger, Car, Pole, Tree etc
+            - Highest Injury Severity Alleged: eg: No injury, Severe, Moderate, Fatality etc
+            - SV Pre-Crash Movement: What vehicle was doing eg: proceesing straight, turning left, parked
+            - Weather: Cloudy, Raining, Clear, Fine winds etc
+            - SV Contact Area: Area hit on the vehicle
+            - Country: US or UK
+            """)
+
+    # -----------------------
+    # Data Limitations
+    # -----------------------
+    with st.expander("⚠️ Data Limitations", expanded=False):
+        if dataset_choice == "UK":
+            st.markdown("""
+            - Minor injuries may be underreported  
+            - Subjective officer judgment in some fields  
+            - Sensitive info withheld (e.g., exact location, breath test results)  
+            - Some fields may be missing or redacted
+            """)
+        else:
+            st.markdown("""
+            - Reporting differences across manufacturers  
+            - Some fields redacted (confidential / PII)  
+            - Data may be incomplete or unverified  
+            - Same crash may appear multiple times
+            """)
+
+    # -----------------------
+    # Toggle to show Python cleaning code
+    # -----------------------
+    with st.expander("🧹 Show Data Cleaning Script", expanded=False):
+        if dataset_choice == "UK":
+            with open("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Python Scripts>/UK_Cleaning.py") as f:
+                code = f.read()
+            st.code(code, language="python")
+        else:
+            with open("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Python Scripts>/US_Cleaning.py") as f:
+                code = f.read()
+            st.code(code, language="python")
+
+    
+# ---------------- Exploratory Data Analysis Tab ----------------
+# ---------------- Exploratory Data Analysis Tab ----------------
+with tabs[2]:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import plotly.express as px
+    import numpy as np
+    import pandas as pd
+    from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
+
+    st.markdown(
+    "<h2 style='font-size:32px; font-weight:900;'>Exploratory Data Analysis (EDA)</h2>",
+    unsafe_allow_html=True
+)
+    # ---------------- Sidebar Settings ----------------
     st.markdown(
     "<h5 style='margin-top:0;'>Key Risk Metrics</h5>", 
     unsafe_allow_html=True)
@@ -972,8 +1142,3 @@ with tabs[4]:
             st.markdown("**3D TSNE for K=3**")
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
 
-
-# ---------------- Insights Tab ----------------
-with tabs[5]:
-    st.subheader("💡 Final Business Insights")
-    st.write("Here is the Final Insights section...")
