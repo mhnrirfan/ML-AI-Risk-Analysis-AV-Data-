@@ -865,14 +865,20 @@ with tabs[3]:
         elif dataset_choice == 'US':
             df = get_imputation_df()
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+                st.write("""
+                - Whilst some imputers such as  mode and last observation carried forward as easy to conduct 
+                especially for categorical datasets they are far behind the random forest and XGBoost with most imputing accuracy 
+                less than 30% which shows the importance of avoiding mode imputation as an easy way out
+                - ML models use the rest of the columns to learn relationships between the columns to impute with an higher accuracy 
+                for instance, if city is known then state can be found too
+                - The highest performing model on average is XGBoost, whilst random forest may be slightly higher for some columns it does not 
+                perform as well for multivalue columns such as contact area which contains "front, back, left" at the same row and due to this 
+                XGBoost performs much better for jaccard index (where order of values doesn't matter) creating a higher average of both accuracy and jaccard index
+                thus used as the final imputation statergy
+                """)
             st.plotly_chart(plot_bar_side_by_side(df), use_container_width=True)
             st.plotly_chart(plot_line_side_by_side(df), use_container_width=True)
             st.markdown("**Imputer Summary**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
             summary_df = imputer_overall_summary(df)
 
     # Example hyperparameter descriptions
@@ -959,8 +965,11 @@ with tabs[3]:
         winner_params = best_params[chosen_model][dataset_choice]
         st.markdown(f"**Hyperparameters of {chosen_model} for {dataset_choice}**")
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+            st.write("""
+            - This section shows which hyperparamters where utlised in RandomSearchCv hyperparameter testing, in this case 
+            random combinations where chosen of hyperparameters based on best performance
+            - Whilst grid search would be more reliable testing every single combination it required a significant more amount of runtime and computational resource
+            - Note: Best value is the combination with the other parameters""")
         # Build table for the chosen model
         rows = []
         for param, description in param_descriptions[chosen_model].items():
@@ -992,34 +1001,125 @@ with tabs[3]:
         # -----------------------------
         # Decision Tree
         dt_us_test_report_df = pd.DataFrame({
-            "precision": [0.54,0.24,0.12,0.88,0.31],
-            "recall": [0.65,0.37,0.17,0.77,0.48],
-            "f1-score": [0.59,0.29,0.14,0.82,0.38],
-            "support": [95,60,12,607,33]
-        }, index=[0,1,2,3,4])
+            "precision": [0.54, 0.24, 0.12, 0.88, 0.31, 0.71, 0.42, 0.76],
+            "recall": [0.65, 0.37, 0.17, 0.77, 0.48, 0.71, 0.49, 0.71],
+            "f1-score": [0.59, 0.29, 0.14, 0.82, 0.38, 0.71, 0.44, 0.73],
+            "support": [95, 60, 12, 607, 33, 807, 807, 807]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
 
         dt_us_val_report_df = pd.DataFrame({
-            "precision": [0.52,0.28,0.10,0.91,0.24],
-            "recall": [0.65,0.47,0.17,0.78,0.38],
-            "f1-score": [0.57,0.35,0.12,0.84,0.29],
-            "support": [48,30,6,304,16]
-        }, index=[0,1,2,3,4])
+            "precision": [0.52, 0.28, 0.10, 0.91, 0.24, 0.71, 0.41, 0.78],
+            "recall": [0.65, 0.47, 0.17, 0.78, 0.38, 0.71, 0.49, 0.71],
+            "f1-score": [0.57, 0.35, 0.12, 0.84, 0.29, 0.71, 0.44, 0.74],
+            "support": [48, 30, 6, 304, 16, 404, 404, 404]
+            }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
 
+        rf_us_test_report_df = pd.DataFrame({
+            "precision": [0.62, 0.39, 0.60, 0.89, 0.57, 0.80, 0.61, 0.80],
+            "recall": [0.84, 0.38, 0.25, 0.87, 0.24, 0.80, 0.52, 0.80],
+            "f1-score": [0.71, 0.39, 0.35, 0.88, 0.34, 0.80, 0.53, 0.79],
+            "support": [95, 60, 12, 607, 33, 807, 807, 807]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+
+        rf_us_val_report_df = pd.DataFrame({
+            "precision": [0.60, 0.52, 0.50, 0.89, 0.33, 0.81, 0.57, 0.80],
+            "recall": [0.73, 0.53, 0.17, 0.89, 0.19, 0.81, 0.50, 0.81],
+            "f1-score": [0.66, 0.52, 0.25, 0.89, 0.24, 0.81, 0.51, 0.80],
+            "support": [48, 30, 6, 304, 16, 404, 404, 404]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+
+        xgb_us_test_report_df = pd.DataFrame({
+            "precision": [0.69, 0.36, 0.50, 0.89, 0.63, 0.82, 0.62, 0.81],
+            "recall": [0.85, 0.35, 0.25, 0.89, 0.36, 0.82, 0.54, 0.82],
+            "f1-score": [0.76, 0.36, 0.33, 0.89, 0.46, 0.82, 0.56, 0.81],
+            "support": [95, 60, 12, 607, 33, 807, 807, 807]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+
+        xgb_us_val_report_df = pd.DataFrame({
+            "precision": [0.62, 0.50, 0.33, 0.90, 0.40, 0.81, 0.55, 0.81],
+            "recall": [0.69, 0.50, 0.33, 0.90, 0.25, 0.81, 0.53, 0.81],
+            "f1-score": [0.65, 0.50, 0.33, 0.90, 0.31, 0.81, 0.54, 0.81],
+            "support": [48, 30, 6, 304, 16, 404, 404, 404]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+
+        lr_us_test_report_df = pd.DataFrame({
+            "precision": [0.37, 0.19, 0.03, 0.88, 0.15, 0.48, 0.32, 0.73],
+            "recall": [0.53, 0.40, 0.33, 0.48, 0.39, 0.48, 0.43, 0.48],
+            "f1-score": [0.43, 0.26, 0.06, 0.62, 0.21, 0.48, 0.32, 0.55],
+            "support": [95, 60, 12, 607, 33, 807, 807, 807]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+
+        lr_us_val_report_df = pd.DataFrame({
+            "precision": [0.43, 0.22, 0.02, 0.83, 0.14, 0.49, 0.32, 0.70],
+            "recall": [0.54, 0.33, 0.17, 0.51, 0.38, 0.49, 0.39, 0.49],
+            "f1-score": [0.48, 0.26, 0.03, 0.63, 0.20, 0.49, 0.32, 0.56],
+            "support": [48, 30, 6, 304, 16, 404, 404, 404]
+        }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
+    
+# --------uk classfication report 
         dt_uk_test_report_df = pd.DataFrame({
-            "precision": [0.47,0.22,0.10,0.77,0.27],
-            "recall": [0.55,0.33,0.14,0.68,0.35],
-            "f1-score": [0.51,0.26,0.12,0.72,0.30],
-            "support": [80,45,10,502,25]
-        }, index=[0,1,2,3,4])
+            "precision": [0.04, 0.79, 0.22, 0.58, 0.35, 0.66],
+            "recall": [0.25, 0.67, 0.25, 0.58, 0.39, 0.58],
+            "f1-score": [0.07, 0.73, 0.24, 0.58, 0.34, 0.61],
+            "support": [283, 14238, 3862, 18383, 18383, 18383]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
 
         dt_uk_val_report_df = pd.DataFrame({
-            "precision": [0.45,0.25,0.12,0.79,0.20],
-            "recall": [0.53,0.36,0.17,0.65,0.28],
-            "f1-score": [0.49,0.30,0.14,0.72,0.23],
-            "support": [40,22,5,250,12]
-        }, index=[0,1,2,3,4])
+            "precision": [0.04, 0.78, 0.21, 0.58, 0.34, 0.65],
+            "recall": [0.26, 0.68, 0.23, 0.58, 0.39, 0.58],
+            "f1-score": [0.07, 0.73, 0.22, 0.58, 0.34, 0.61],
+            "support": [142, 7119, 1931, 9192, 9192, 9192]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
 
-        # Other models (use same DataFrames here as placeholder)
+        rf_uk_test_report_df = pd.DataFrame({
+            "precision": [0.04, 0.78, 0.24, 0.69, 0.35, 0.66],
+            "recall": [0.04, 0.85, 0.16, 0.69, 0.35, 0.69],
+            "f1-score": [0.04, 0.81, 0.19, 0.69, 0.35, 0.67],
+            "support": [283, 14238, 3862, 18383, 18383, 18383]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+        rf_uk_val_report_df = pd.DataFrame({
+            "precision": [0.03, 0.78, 0.25, 0.70, 0.35, 0.66],
+            "recall": [0.04, 0.86, 0.16, 0.70, 0.35, 0.70],
+            "f1-score": [0.03, 0.82, 0.19, 0.70, 0.35, 0.67],
+            "support": [142, 7119, 1931, 9192, 9192, 9192]
+            }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+        xgb_uk_test_report_df = pd.DataFrame({
+            "precision": [0.04, 0.79, 0.24, 0.66, 0.36, 0.66],
+            "recall": [0.14, 0.80, 0.19, 0.66, 0.38, 0.66],
+            "f1-score": [0.06, 0.79, 0.21, 0.66, 0.36, 0.66],
+            "support": [283, 14238, 3862, 18383, 18383, 18383]
+            }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+        xgb_uk_val_report_df = pd.DataFrame({
+            "precision": [0.04, 0.79, 0.23, 0.66, 0.35, 0.66],
+            "recall": [0.16, 0.80, 0.17, 0.66, 0.38, 0.66],
+            "f1-score": [0.07, 0.79, 0.20, 0.66, 0.35, 0.66],
+            "support": [142, 7119, 1931, 9192, 9192, 9192]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+        lr_uk_test_report_df = pd.DataFrame({
+            "precision": [0.03, 0.79, 0.21, 0.46, 0.34, 0.66],
+            "recall": [0.38, 0.50, 0.32, 0.46, 0.40, 0.46],
+            "f1-score": [0.06, 0.61, 0.25, 0.46, 0.31, 0.53],
+            "support": [283, 14238, 3862, 18383, 18383, 18383]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+        lr_uk_val_report_df = pd.DataFrame({
+            "precision": [0.04, 0.79, 0.20, 0.45, 0.34, 0.65],
+            "recall": [0.44, 0.49, 0.31, 0.45, 0.41, 0.45],
+            "f1-score": [0.07, 0.60, 0.25, 0.45, 0.31, 0.52],
+            "support": [142, 7119, 1931, 9192, 9192, 9192]
+        }, index=["0", "1", "2", "accuracy", "macro avg", "weighted avg"])
+
+ 
+ 
+        dt_us_test_report_df = dt_us_test_report_df.copy()
+        dt_us_val_report_df = dt_us_val_report_df.copy()
+        dt_uk_test_report_df = dt_uk_test_report_df.copy()
+        dt_uk_val_report_df = dt_uk_val_report_df.copy()
+
         rf_us_test_report_df = dt_us_test_report_df.copy()
         rf_us_val_report_df = dt_us_val_report_df.copy()
         rf_uk_test_report_df = dt_uk_test_report_df.copy()
@@ -1114,15 +1214,9 @@ with tabs[3]:
                     st.subheader(f"{split} Data")
                     
                     # Display classification report
-                    with st.expander("ℹ️ Insights"):
-                        st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                        st.write("You can add explanations, methodology, or links here.")            
                     st.dataframe(classification_reports[chosen_model][dataset_choice][split])
                     
                     # Open and display confusion matrix image
-                    with st.expander("ℹ️ Insights"):
-                        st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                        st.write("You can add explanations, methodology, or links here.")
                     cm_image = Image.open(confusion_matrix_paths[chosen_model][dataset_choice][split])
                     
                     # Resize image to fixed height while keeping aspect ratio
@@ -1145,8 +1239,23 @@ with tabs[3]:
             "Validation": [0.79, 0.85, 0.88, 0.78]
         })
         with st.expander("ℹ️ Insights"):
-            st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-            st.write("You can add explanations, methodology, or links here.")
+            st.write("""
+            - Decision Tree (82%): whilst overall is has a good accuracy is on the lower end and this can be 
+            with this a large amount of accidents which are minor are predicted as severe and moderate whilst 
+            9647 
+            
+            - Random Forest(87%):  second highest accuracy but also deal with the
+            seen due to the heavy bias towards the minor class even in the validation dataset class 1 is highly
+            correctly predicted (6,094) but the moderate accidents is incorrectly predicted and due to the lack of
+            severe classes they are also not strongly predicted.
+            
+            
+            - XGBoost (89%): 
+            
+            - Logistic Regression (80%): Logistic Re
+            
+            
+            """)
 
         # Melt dataframe to long format so PX can handle it
         accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
