@@ -79,12 +79,12 @@ with st.sidebar:
                            'Roadway Type', 'Roadway Surface', 'Lighting', 'Crash With', 
                             'SV Pre-Crash Movement', 'SV Contact Area', 
                            'Weather']
-            numeric_options = [col for col in UK_data.select_dtypes(include='number').columns]
+            numeric_options = ["Posted Speed Limit (MPH)", "Report Version","Model Year"]
         else:
             cat_options = ['Make', 'Model', 'City', 'State', 'Roadway Type', 'Roadway Surface', 'Lighting', 
                            'Crash With', 'SV Pre-Crash Movement', 
                            'SV Contact Area', 'Weather']
-            numeric_options = [col for col in US_data.select_dtypes(include='number').columns]
+            numeric_options = ["Posted Speed Limit (MPH)", "Report Version","Model Year"]
 
         severity_col_choice = st.selectbox("Select Category for Severity Analysis", options=cat_options)
         numeric_col = st.selectbox("Select Numeric Column for Boxplot/KDE", options=numeric_options)
@@ -1226,52 +1226,102 @@ with tabs[4]:
     # Dataset-specific settings
     if dataset_choice == "UK":
         flexible_success("UK Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 4565, 1 → 4734, 2 → 13589", alignment="center")
+        with st.expander("ℹ️ Table Insights"):
+                st.write("""There are 3 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
+                
+                - Cluster 2 is a much bigger datset containing BMW crashes as the mode however cluster 1 contains identical catergoristics however is with a ford fiesta instead
+                these clusters can potentially be merged.
+                
+                - Cluster 0 is contains ford fiestas too however with older models, affecting birmingham which is a peak area (As seen in EDA map) affecting we roads and weather,
+                
+                - For all clusters the contact area is front and movement is going ahead with minor injuries and at low 30mph, there is no main cluster for severe accidents potentially
+                other than the location, weather and model most accidents are occuring at the same way hence clustering may not be as beneficial.
+                """)
         if clustering_col == "View Clustered Data":
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
             csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
             df = pd.read_csv(csv_path)
             st.dataframe(df.head())
 
         elif clustering_col == "K-Means":
             st.markdown("**Showing Optimal K for UK dataset**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+            with st.expander("ℹ️ Elbow Method Insights"):
+                st.write("""
+                - The Elbow method shows a steeper drop from cluster 3 to 4, suggesting that 3–4 clusters are meaningful  
+                - Selecting 3 clusters provides meaningful clustering, especially around severity-based grouping  
+                - 3 clusters also give the highest silhouette score, and since closer to 1 is better, this supports the choice  
+                - Overall, the silhouette score is not high enough to be ideal, but it is still worth experimenting with  
+                """)
+
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
             st.markdown("**Decision Trees showing Split for K=3**")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")            
+                    st.write("""
+                        - Using Severity as a Target variable for Kmeans, 4 splits are used to help visual the split and validate if meaningful splits based on domain knowledge
+                        - ADS equipment is the strongest split: when ADS <= 0.132, about 1,709 samples are classified, mostly toward one cluster  
+                        - Weather conditions drive outcomes when ADS > 0.132: for example, weather <= 0.153 covers around 1,933 cases  
+                        - Roadway surface appears multiple times as a deciding factor, affecting more than 2,000 samples across branches  
+                        - Posted speed limit (<= 35 mph) plays a role in smaller groups, splitting around 479 samples  
+                        - Vehicle make and model repeatedly influence cluster assignment, seen in splits of around 200–500 cases  
+                        - Automation system engagement shows up in about 1,380 samples, underlining its importance in accident outcomes  
+                        - Leaf nodes reveal how accidents distribute across the three clusters, e.g., some nodes show values like [0.003, 0.001, 0.996], indicating very strong purity for a single cluster  
+                        - Overall, the model distinguishes three accident clusters:  
+                            1. Cluster linked with **low ADS equipment** and **roadway/speed conditions**  
+                            2. Cluster shaped by **environmental factors** such as weather and road surface  
+                            3. Cluster influenced by **automation engagement errors** and **city/time-related context**  
+                        """)
+
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
 
         elif clustering_col == "PCA":
-            st.markdown("**2D PCA for K=3**")
+            st.markdown("### PCA Clustering Results for K=3")
+                # Single insights section for both plots
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
-            st.markdown("**3D PCA for K=3**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
-
+                    st.write("""
+                    - The data groups into three clear clusters of accidents which is well-separated clusters, suggesting that K=3 is a suitable choice for this dataset or possible overfitting
+                    - This is as the 3D PCA plot highlights separation even more clearly: clusters 0 and 2 appear dense, while cluster 1 spreads across a wider range  
+                    - Given the explainabilty diagram, yellow and purple cluster could be merged based on FORD as make
+                    """)
+            # Create two columns for side-by-side layout
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**2D PCA for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
+            with col2:
+                st.markdown("**3D PCA for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
+        
         elif clustering_col == "TSNE":
-            st.markdown("**2D TSNE for K=3**")
+            st.markdown("### T-SNE Clustering Results for K=3")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
-            st.markdown("**3D TSNE for K=3**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
-
+                st.write("""
+                - 3D maps the 2D t-SNE visualization improves cluster separation, confirming that incident conditions dominate the dataset structure
+                - Explainabilty show that there is three natural clusters identified (K=3) based on incident features like vehicle make, roadway conditions, and weather
+                - Cluster 0: compact, consistent incidents; often associated with wet roads and rain (e.g., Birmingham); mostly conventional vehicles on single carriageways
+                - Cluster 1: shows overlap with Cluster 2; incidents mostly under clear/dry weather (e.g., Bradford); contains common low–mid range vehicles (e.g., Ford Fiesta)
+                - Cluster 2: largest and most spread-out cluster; incidents under varied conditions but primarily conventional vehicles without ADS; roadway features (single carriageway, 30 MPH) strongly influence clustering
+                - Primary drivers of clustering: weather and road surface conditions (rain/wet vs. clear/dry)
+                - Secondary driver: vehicle type has less influence than environmental and roadway factors
+               """)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**2D TSNE for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
+            with col2:  # You were missing the `with col2:` statement
+                st.markdown("**3D TSNE for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
+    
     elif dataset_choice == "US":
         flexible_success("US Silhouette Score = **0.114**  |  Cluster Distribution: 0 → 1970, 1 → 1674, 2 → 233", alignment="center")
+        with st.expander("ℹ️ Table Insights"):
+            st.write("""There are 3 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
+            
+            - Clear ADAS/ADS clusters can be found showing high signs of certain characteristics being unlilke to the automation such as Make, Roadway Type, Precrash movement
+            
+            - However the ADAS vehicles are broken into cluster itself showing vehicles such as model 3 having issues with Wetter roads and Cloudy weather
+            
+            - ADS tends to struggle more on roads with smaller speeds and commonly hitting with passengers cars however as precrash movement is stopped and contact area is back showing that 
+            they may not be at fault and the crash partner is at fault or issues with breaking 
+            """)
         if clustering_col == "View Clustered Data":
             csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_cluster_summary.csv"
             df = pd.read_csv(csv_path)
@@ -1279,37 +1329,69 @@ with tabs[4]:
 
         elif clustering_col == "K-Means":
             st.markdown("**Showing Optimal K for UK dataset**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+            with st.expander("ℹ️ Elbow Method Insights"):
+                    st.write("""
+                    - The Elbow method shows a steeper drop from cluster 3 to 4, suggesting that 3–4 clusters are meaningful  
+                    - Inertia decreases steadily as the number of clusters increases  
+                    - The steepest drop occurs between clusters 2 to 4, suggesting meaningful groupings around k=3 or k=4  
+                    - After k=4, the curve flattens, showing diminishing returns from adding more clusters  
+                    - The highest silhouette score is at k=3, indicating the best cluster separation  
+                    - Scores remain relatively low overall, suggesting clusters are not strongly separated but still provide useful structure  
+                    """)
+
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
             st.markdown("**Decision Trees showing Split for K=3**")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
+                    st.write("""
+                    - ADS equipment is the strongest split: when ADS <= 0.12, around 1,805 samples are classified, mostly toward one cluster  
+                    - Weather conditions drive outcomes when ADS > 0.12: for example, weather <= 0.14 covers about 1,933 cases  
+                    - Roadway surface appears multiple times as a deciding factor, affecting more than 2,000 samples across branches  
+                    - Speed limit (<= 49 mph) plays a role in smaller groups, splitting around 258 samples  
+                    - Maneuver type repeatedly influences cluster assignment, seen in splits of around 225–500 cases  
+                    - Automation system error shows up in about 1,380 samples, underlining its importance in accident outcomes  
+                    - Leaf nodes reveal how accidents distribute across the three clusters, e.g., some nodes show values like [0.003, 0.001, 0.996], indicating very strong purity for a single cluster  
+                    - Overall, the model distinguishes three accident clusters:  
+                    1. cluster linked with low ADS equipment and roadway/speed conditions  
+                    2. cluster shaped by environmental factors such as weather and road surface  
+                    3.  cluster influenced by automation errors and crash presence  
+                    """)
+
             st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
 
         elif clustering_col == "PCA":
-            st.markdown("**2D PCA for K=3**")
+            st.markdown("### PCA Clustering Results for K=3")
+                # Single insights section for both plots
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
-            st.markdown("**3D PCA for K=3**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
-
+                    st.write("""
+                    - The 2D plot shows that the smaller yellow cluster could possibly be noise and merged with the purple and green cluster
+                    creating a simple split of adas and ads
+                    - However the 3d plot shows that yellow are clustered in the z axis too showcasing a possible 
+                    smaller cluster in this case the model and weather seperating cluster 0 (yellow/adas) from cluster 2 (purple/adas) while cluster 1
+                    is independently ads and clearly distinct
+                    """)
+            # Create two columns for side-by-side layout
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**2D PCA for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
+            with col2:
+                st.markdown("**3D PCA for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
+        
         elif clustering_col == "TSNE":
-            st.markdown("**2D TSNE for K=3**")
+            st.markdown("### T-SNE Clustering Results for K=3")
             with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
-            st.markdown("**3D TSNE for K=3**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
-
+                st.write("""
+                - 3D maps the 2D t-SNE visualization improves cluster separation, confirming that incident conditions dominate the dataset structure
+                - Purple and Teal clusters are far showcases that majority of adas/ads have less variation making the root split highly important 
+                - Yellow is bimodal shape where both ADAS and ADS have similar behaviour as weather and roadtype dominate so high that it can be considered 
+                as a seperate cluster
+               """)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**2D TSNE for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
+            with col2:  # You were missing the `with col2:` statement
+                st.markdown("**3D TSNE for K=3**")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
+    
