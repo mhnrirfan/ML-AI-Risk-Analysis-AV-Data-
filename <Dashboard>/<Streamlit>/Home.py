@@ -1245,14 +1245,69 @@ with tabs[3]:
             elif chosen_model == "Logistic Regression" and dataset_choice == "UK":
                 with st.expander("ℹ️ Insights"):
                     st.write("""
+                        Logistic Regression uses the logistic sigmoid equation to predict the probabilty of the point being a class and using parameters to find coefficients to best fit the data
+                        Hyperparameter Elasticnet is used for the UK dataset which uses both L1 and L2 for regularisation
+                        -**Advantages** Fast to train and coefficients are given for each feature to explain the model results, it also is simple to conduct and overfitting methods can be applied
+                        -**Disadvantages**: Highly correlated features, and outliers can reduce the accuracy by alot compared to random forest and XGboost
+                        
+                        **Insights**
+                            - Performs slightly worse than random forest for the UK dataset where the minority class for fatality is better predicted for both validation and testing dataset but class 2 performs much better in random forest than XGBoost
+                            """)
+
+            elif chosen_model == "Decision Tree" and dataset_choice == "US":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                    - Decision Tree as seen in the clustering explainabilty works by recursively splitting data based on features based on decisions made by the branches splitting data into leaves. 
+                    - Given the hyperparamter testing this decision tree algorithm works by gini impurity which dictates how mixed the data is in the group
+                    - The maxmium depth is also chosen as 10 splits which ensures a reduction od overfitting
+                    - **Advantages**: They are easy to understand and have fast speeds given the amount of data available 
+                    - **Disadvantages**: However they are sensitive to variables, and overfit meaning they perform worse to unseen data thus increasing inaccuracy
+                    
+                    **Insights**
+                    - Decision Trees perform very well with less false postives compared to logistic regression
+                    - Classes 4 and 2 struggle with precision and due to less support and values it is harder to learn from and classify
+                    """)
+            elif chosen_model == "Random Forest" and dataset_choice == "US":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                    Random Forest uses multiple decision trees to reduce overfitting and increase accuracy as it combines their input
+                    Hyperparameter 200/300 trees are used for the US and UK dataset with no maxmium limit on the depth which can be reduced for quicker runtime but randomsearchCV gave them to be the best parameters.
+                    -**Advantages** it has higher accuracy and robust to outliers and noise and can capture complex relationships
+                    -**Disadvantages**: however they can take an extremely long time to run (the longest in my jupiter notebook compared to other models)
+                   
+                    **Insights**
+                    - Whilst coming second to the XGboost models, it only performs slightly worse for all of the clusters and struggles more with class 4 compared to XGBoost
+                    - Both RF and XGBoost perform exactly the same for fatality given a very small support of 12 
+                    """)
+
+            elif chosen_model == "XGBoost" and dataset_choice == "US":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
                             XGBoost also uses trees however builds the trees sequentially by correcting the errors of the previous trees which make its much faster than random forest
                             Hyperparameter 0.1 is used as the learning rate and the max depth of each tree is 6 based on tuning which is the same for both dataset
                             -**Advantages** Often outperforms random forest models and contains regularisation to reduce overfitting using L1/L2 regularisation 
                             -**Disadvantages**: Not as easy to understand and explain and careful tuning is needed for the number of trees and step sizes for updating the predictions for learning rate
 
                             **Insights**
-                            - Performs slightly worse than random forest for the UK dataset where the minority class for fatality is better predicted for both validation and testing dataset but class 2 performs much better in random forest than XGBoost
+                            -  XGboost is the best model with a great score of 81.7% for training and 81.2% for validation
+                            - The key highlight is as it sequentially builds upon the previous tree whilst still having a high n-estimatior (trees) it learns from the previous tree derving greater results for the 3 most count classes
+                                                        """)
+
+            elif chosen_model == "Logistic Regression" and dataset_choice == "US":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                    Logistic Regression uses the logistic sigmoid equation to predict the probabilty of the point being a class and using parameters to find coefficients to best fit the data
+                    Hyperparameter Elasticnet is used for the UK dataset which uses both L1 and L2 for regularisation
+                    -**Advantages** Fast to train and coefficients are given for each feature to explain the model results, it also is simple to conduct and overfitting methods can be applied
+                    -**Disadvantages**: Highly correlated features, and outliers can reduce the accuracy by alot compared to random forest and XGboost
+
+                    **Insights**
+                    - Logistic Regression has preformed significantly worse than the rest of the models unable to pick up the complex relationships even when there is a majority class
+                    - This is evident with even the majority class (3) having a much lower accuracy rate for both validation and testing 
+
                             """)
+
+
             import streamlit as st
             from PIL import Image
 
@@ -1281,20 +1336,25 @@ with tabs[3]:
 
 
         st.title(f"**Explainability Plots of {chosen_model} for {dataset_choice}**")
-        if chosen_model == "Decision Tree" and dataset_choice == "UK":
+        if chosen_model == "Decision Tree":
             with st.expander("ℹ️ Insights"):
                 st.write("""
-                - Decision Tree as seen in the clustering explainabilty works by recursively splitting data based on features based on decisions made by the branches splitting data into leaves. 
-                - Given the hyperparamter testing this decision tree algorithm works by gini impurity which dictates how mixed the data is in the group
-                - The maxmium depth is also chosen as 10 splits which ensures a reduction od overfitting
-                - **Advantages**: They are easy to understand and have fast speeds given the amount of data available 
-                - **Disadvantages**: However they are sensitive to variables, and overfit meaning they perform worse to unseen data thus increasing inaccuracy
+                - SHAP 
+                - LIME 
 
-                **Insights**                
-                - The general accuracy of both validation and training dataset is 0.58 which class 1 (minor) being the most accurate compared to the other classes this can also be due to it being majority class
-                - However the fatality and severe class is much lower showcasing the favouring as 138 out of 238 is misclassfied for class 0 (fatality) and 2385 out of 3862  for class 2 (severe),
-                - This can be due to the limitation of only using 1 tree but even with SMOTE the scores is low.
+                **UK Insights**                
+
+
+                **US Insights**                
+     
                 """)
+
+
+
+
+
+
+
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
         lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
