@@ -8,9 +8,13 @@ streamlit run Home.py
 # Home.py
 import streamlit as st
 import pandas as pd
+import os
+from PIL import Image
+import streamlit as st
 from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
 from EDA import load_csv, prep_dates, fig_missingness, fig_boxplot
 from EDA import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
+
 
 
 # ---------------- Load Data ----------------
@@ -91,7 +95,7 @@ with st.sidebar:
         freq_option = st.selectbox("Select Time Unit for Frequency Plot", options=['Day', 'Month', 'Year'])
         # ----- for supervised
         st.header("Supervised Settings")
-        supervised_options = ["View Data", "Imputers","Hyperparameters","Results","Explainability"]
+        supervised_options = ["View Data", "Imputers","Hyperparameters","Results"]
         supervised_col = st.selectbox("Select Process", options=supervised_options)
         model_col = ["Hyperparameters", "Results", "Explainability"]
         algo_col = ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]
@@ -101,7 +105,7 @@ with st.sidebar:
         if supervised_col in model_col:
             chosen_model = st.selectbox("Choose Model", options=algo_col)
         
-        st.header("Clustering")
+        st.header("Clustering Setting")
         clustering_options = ["View Clustered Data", "K-Means","PCA","TSNE"]
         clustering_col = st.selectbox("Select Process", options=clustering_options)
 
@@ -1120,20 +1124,20 @@ with tabs[3]:
         dt_uk_test_report_df = dt_uk_test_report_df.copy()
         dt_uk_val_report_df = dt_uk_val_report_df.copy()
 
-        rf_us_test_report_df = dt_us_test_report_df.copy()
-        rf_us_val_report_df = dt_us_val_report_df.copy()
-        rf_uk_test_report_df = dt_uk_test_report_df.copy()
-        rf_uk_val_report_df = dt_uk_val_report_df.copy()
+        rf_us_test_report_df = rf_us_test_report_df.copy()
+        rf_us_val_report_df = rf_us_val_report_df.copy()
+        rf_uk_test_report_df = rf_uk_test_report_df.copy()
+        rf_uk_val_report_df = rf_uk_val_report_df.copy()
 
-        xgb_us_test_report_df = dt_us_test_report_df.copy()
-        xgb_us_val_report_df = dt_us_val_report_df.copy()
-        xgb_uk_test_report_df = dt_uk_test_report_df.copy()
-        xgb_uk_val_report_df = dt_uk_val_report_df.copy()
+        xgb_us_test_report_df = xgb_us_test_report_df.copy()
+        xgb_us_val_report_df = xgb_us_val_report_df.copy()
+        xgb_uk_test_report_df = xgb_uk_test_report_df.copy()
+        xgb_uk_val_report_df = xgb_uk_val_report_df.copy()
 
-        lr_us_test_report_df = dt_us_test_report_df.copy()
-        lr_us_val_report_df = dt_us_val_report_df.copy()
-        lr_uk_test_report_df = dt_uk_test_report_df.copy()
-        lr_uk_val_report_df = dt_uk_val_report_df.copy()
+        lr_us_test_report_df = lr_us_test_report_df.copy()
+        lr_us_val_report_df = lr_us_val_report_df.copy()
+        lr_uk_test_report_df = lr_uk_test_report_df.copy()
+        lr_uk_val_report_df = lr_uk_val_report_df.copy()
 
         # -----------------------------
         # Classification Reports Dictionary
@@ -1181,10 +1185,10 @@ with tabs[3]:
         # -----------------------------
         accuracy_data = pd.DataFrame({
             "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
-            "US Test": [0.7051, 0.7993, 0.8178, 0.4758],
-            "US Validation": [0.7129, 0.8069, 0.8119, 0.4901],
-            "UK Test": [0.5762, 0.6925, 0.6578, 0.4615],
-            "UK Validation": [0.5765, 0.6972, 0.6555, 0.4532]
+            "US Test": [0.705081, 0.799257, 0.817844, 0.475836],
+            "US Validation": [0.712871, 0.806931, 0.811881, 0.490099],
+            "UK Test": [0.576239, 0.692488, 0.657782, 0.461513],
+            "UK Validation": [0.576480, 0.697237, 0.655461, 0.453220]
         })
 
         # -----------------------------
@@ -1199,7 +1203,56 @@ with tabs[3]:
 
         if chosen_model and dataset_choice:
             st.subheader(f"{chosen_model} - {dataset_choice} Dataset")
+            if chosen_model == "Decision Tree" and dataset_choice == "UK":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                    - Decision Tree as seen in the clustering explainabilty works by recursively splitting data based on features based on decisions made by the branches splitting data into leaves. 
+                    - Given the hyperparamter testing this decision tree algorithm works by gini impurity which dictates how mixed the data is in the group
+                    - The maxmium depth is also chosen as 10 splits which ensures a reduction od overfitting
+                    - **Advantages**: They are easy to understand and have fast speeds given the amount of data available 
+                    - **Disadvantages**: However they are sensitive to variables, and overfit meaning they perform worse to unseen data thus increasing inaccuracy
 
+                    **Insights**                
+                    - The general accuracy of both validation and training dataset is 0.58 which class 1 (minor) being the most accurate compared to the other classes this can also be due to it being majority class
+                    - However the fatality and severe class is much lower showcasing the favouring as 138 out of 238 is misclassfied for class 0 (fatality) and 2385 out of 3862  for class 2 (severe),
+                    - This can be due to the limitation of only using 1 tree but even with SMOTE the scores is low.
+                    """)
+            elif chosen_model == "Random Forest" and dataset_choice == "UK":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                    Random Forest uses multiple decision trees to reduce overfitting and increase accuracy as it combines their input
+                    Hyperparameter 200/300 trees are used for the US and UK dataset with no maxmium limit on the depth which can be reduced for quicker runtime but randomsearchCV gave them to be the best parameters.
+                    -**Advantages** it has higher accuracy and robust to outliers and noise and can capture complex relationships
+                    -**Disadvantages**: however they can take an extremely long time to run (the longest in my jupiter notebook compared to other models)
+
+                    **Insights**
+                    - Random Forest is highest accuracy compared to the othe models with the least false postive and negatives even so the accuracy is 69.2% for training and 69.7% for validation
+                    - Once again the accuracy of class 1 is much higher than the accuracy for class 0 and 2 showcasing this is a common issue as models are not learning as well with SMOTE
+                    """)
+
+            elif chosen_model == "XGBoost" and dataset_choice == "UK":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                            XGBoost also uses trees however builds the trees sequentially by correcting the errors of the previous trees which make its much faster than random forest
+                            Hyperparameter 0.1 is used as the learning rate and the max depth of each tree is 6 based on tuning which is the same for both dataset
+                            -**Advantages** Often outperforms random forest models and contains regularisation to reduce overfitting using L1/L2 regularisation 
+                            -**Disadvantages**: Not as easy to understand and explain and careful tuning is needed for the number of trees and step sizes for updating the predictions for learning rate
+
+                            **Insights**
+                            - Performs slightly worse than random forest for the UK dataset where the minority class for fatality is better predicted for both validation and testing dataset but class 2 performs much better in random forest than XGBoost
+                            """)
+
+            elif chosen_model == "Logistic Regression" and dataset_choice == "UK":
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                            XGBoost also uses trees however builds the trees sequentially by correcting the errors of the previous trees which make its much faster than random forest
+                            Hyperparameter 0.1 is used as the learning rate and the max depth of each tree is 6 based on tuning which is the same for both dataset
+                            -**Advantages** Often outperforms random forest models and contains regularisation to reduce overfitting using L1/L2 regularisation 
+                            -**Disadvantages**: Not as easy to understand and explain and careful tuning is needed for the number of trees and step sizes for updating the predictions for learning rate
+
+                            **Insights**
+                            - Performs slightly worse than random forest for the UK dataset where the minority class for fatality is better predicted for both validation and testing dataset but class 2 performs much better in random forest than XGBoost
+                            """)
             import streamlit as st
             from PIL import Image
 
@@ -1227,35 +1280,73 @@ with tabs[3]:
                     st.image(cm_image, use_container_width=True)
 
 
+        st.title(f"**Explainability Plots of {chosen_model} for {dataset_choice}**")
+        if chosen_model == "Decision Tree" and dataset_choice == "UK":
+            with st.expander("ℹ️ Insights"):
+                st.write("""
+                - Decision Tree as seen in the clustering explainabilty works by recursively splitting data based on features based on decisions made by the branches splitting data into leaves. 
+                - Given the hyperparamter testing this decision tree algorithm works by gini impurity which dictates how mixed the data is in the group
+                - The maxmium depth is also chosen as 10 splits which ensures a reduction od overfitting
+                - **Advantages**: They are easy to understand and have fast speeds given the amount of data available 
+                - **Disadvantages**: However they are sensitive to variables, and overfit meaning they perform worse to unseen data thus increasing inaccuracy
 
-        st.subheader("Model Accuracy Comparison")
+                **Insights**                
+                - The general accuracy of both validation and training dataset is 0.58 which class 1 (minor) being the most accurate compared to the other classes this can also be due to it being majority class
+                - However the fatality and severe class is much lower showcasing the favouring as 138 out of 238 is misclassfied for class 0 (fatality) and 2385 out of 3862  for class 2 (severe),
+                - This can be due to the limitation of only using 1 tree but even with SMOTE the scores is low.
+                """)
+        shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
+        lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
+
+
+        if dataset_choice == "UK":
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
+            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_UK.png")
+            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx5.png")
+        elif dataset_choice == "US":
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
+            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_US.png")
+            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx5.png")
+
+    # Function to show image with title
+        import os
+        from PIL import Image
+        import streamlit as st
+
+        def show_plot(title, img_path):
+            if os.path.exists(img_path):
+                st.markdown(f"<h3 style='text-align: center;'>{title}</h3>", unsafe_allow_html=True)
+                img = Image.open(img_path)
+                st.image(img, use_container_width=True)  # Image scales to container width
+            else:
+                st.warning(f"Image not found: {img_path}")
+
+
+        # Show plots sequentially
+        show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
+        show_plot(f"SHAP SUMMARY Plot of {chosen_model} for {dataset_choice}", shap_summary_path)
+        show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+
+            # ---------------- Supervised Learning Tab ----------------
+
+        
         import plotly.express as px
         import pandas as pd
-
-        # Example dataframe: 4 models, Test & Validation accuracy
-        accuracy_data = pd.DataFrame({
-            "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
-            "Test": [0.82, 0.87, 0.89, 0.80],
-            "Validation": [0.79, 0.85, 0.88, 0.78]
-        })
-        with st.expander("ℹ️ Insights"):
-            st.write("""
-            - Decision Tree (82%): whilst overall is has a good accuracy is on the lower end and this can be 
-            with this a large amount of accidents which are minor are predicted as severe and moderate whilst 
-            9647 
-            
-            - Random Forest(87%):  second highest accuracy but also deal with the
-            seen due to the heavy bias towards the minor class even in the validation dataset class 1 is highly
-            correctly predicted (6,094) but the moderate accidents is incorrectly predicted and due to the lack of
-            severe classes they are also not strongly predicted.
-            
-            
-            - XGBoost (89%): 
-            
-            - Logistic Regression (80%): Logistic Re
-            
-            
-            """)
+        if dataset_choice == "US":
+            st.title("US Model Accuracy Comparison")
+            # Example dataframe: 4 models, Test & Validation accuracy
+            accuracy_data = pd.DataFrame({
+                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+                "Test": [0.705081, 0.799257, 0.817844, 0.475836],
+                "Validation": [0.712871, 0.806931, 0.811881, 0.490099]
+            })
+        if dataset_choice == "UK":
+            st.title("UK Model Accuracy Comparison")
+            accuracy_data = pd.DataFrame({
+                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+                "Test": [0.576239, 0.692488, 0.657782, 0.461513],
+                "Validation": [0.576480, 0.697237, 0.655461, 0.453220]
+            })
 
         # Melt dataframe to long format so PX can handle it
         accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
@@ -1278,264 +1369,216 @@ with tabs[3]:
         )
 
         st.plotly_chart(fig, use_container_width=True)
+    with tabs[4]:
+        import streamlit as st
+        from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
 
-    import os
-    from PIL import Image
-    import streamlit as st
 
-    if supervised_col == "Explainability" and chosen_model:
+        st.subheader("📈 Clustering")
+        # Dataset-specific settings
         if dataset_choice == "UK":
-            flexible_info("Labels: 0-> FATALITY  1-> MINOR 2-> SERIOUS", font_size=10)
-        
-        elif dataset_choice == "US":
-            flexible_info("Labels: 0-> MINOR  1-> SERIOUS 2-> FATALITY 3-> NO INJURIES REPORTED 4-> MODERATE ", font_size=10)
-            
+            flexible_success("UK Silhouette Score = **0.121**  |  Cluster Distribution: (0: 1729, 1: 12414, 2: 4499, 3: 4334, 4: 3)", alignment="center")
+            with st.expander("ℹ️ Table Insights"):
+                    st.write("""
+                                - There are 5 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
+                                - Cluster 1 is the largest and the only cluster with BMW as a model, given it is almost identical to cluster 2 and together makes up to 72% of the dataset, however given the elbow method and silohuette peaking at 5 it is important to experiment with differents K.
+                                - The smallest cluster is clster 4 with only 3 values which is an outlier as the lattitude and longitude was 0,0 mapping the city country to Ghana making it useful to find noise and outliers using these methods 
+                                - The other key features acting within this dataset split is city with Bradford, Birmingham and Cardiff across a variety of different times from 5-8pm.
+                                - Additionally, cluster 3 is the only cluster split based on weather and wet road surface
+                                """)
+            if clustering_col == "View Clustered Data":
+                csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
+                df = pd.read_csv(csv_path)
+                st.dataframe(df.head())
 
-        st.markdown(f"### **Explainability Plots of {chosen_model} for {dataset_choice}**")
-        shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
-        lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
+            elif clustering_col == "K-Means":
+                st.markdown("**Showing Optimal K for UK dataset**")
+                with st.expander("ℹ️ Elbow Method Insights"):
+                    st.write("""
+                        - Two methods to determine the ideal clusters other than randomsearchCV and gridsearchCV is using the elbow method and silohuette score.
+                        - The optimal k can be found using the part where inertia decreases steadily in with case around 3-5, however during this time it is important to balance it with the average  silohuette score which is mean distance to the closest cluster with scores close to 1 being well clustered, -1 to the incorrect cluster and 0 being close to the nearest boundary
+                        - Here the scores are closer to one suggesting a lower need for clusters suggesting less meaningful differences between the clusters. 
 
+                        - **For the UK dataset**, K=5 is chosen, while RandomSearch dicates 3/4 clusters, the silohuette score rapidly peaks at 5 which is a good indicator to experiment
+                    """)
 
-        if dataset_choice == "UK":
-            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
-            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_UK.png")
-            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx5.png")
-        elif dataset_choice == "US":
-            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
-            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_US.png")
-            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx5.png")
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
+                st.markdown("**Decision Trees showing Split for K=5**")
+                with st.expander("ℹ️ Insights"):
+                        st.write("""
+                                - When using K-Means data is split into K number of cluster, we can adjust hyperparamters but we do not know why a split has occured and the percentages behind each feature. This is why a decision tree can be plotted to show the split and how each cluster is defined other than reading a table and worrying about how to label the clusters. 
+                                - A decision tree works by splititng the data based on a condition (root node) and the more layers the more splits can be made which can help trace the cluster 
 
-    # Function to show image with title
-        def show_plot(title, img_path):
-            st.markdown(f"**{title}**")
-            with st.expander("ℹ️ Insights"):
-                st.write(f"This chart shows the top {top_n} categories for **{severity_col_choice}** severity analysis.")
-                st.write("You can add explanations, methodology, or links here.")
-            if os.path.exists(img_path):
-                img = Image.open(img_path)
-                st.image(img, use_container_width=True)  # Automatically adjusts width to container
-            else:
-                st.warning(f"Image not found: {img_path}")
+                                **UK Dataset Insights**
+                                - Here each colour is a cluster with (orange:0),(Teal:2),(Green:1)(pink:4)(purple:3) 
+                                - The first split is based on the model with 76.9% of vehicles being Ford Fiestas and the 23.1% being BMW and Rainy Weather
+                                - Ford Fiestas are then split based on the state/country (given England and Wales) and then Rainy weather and wet road surface to find cluster 3, given cluster 3 is also found on the right side of the tree shows there is overlap
+                                - Given the 4 layers of split the pink cluster 4 is approximated to 0.0% samples as 3/22979 is extremely small
+                                - The diagram and feature importance also highlight little variance between roadway type, speed, contact area and movement
+                                - Instead the time, date, model and model year are key contenders within the clustering 
+                                - Given the high amount of minor accidents the overpowers the clustering modes and increasing the K will reduce the silouette hence clustering may not be as useful given the data is only 10% sampled 
 
-        # Show plots sequentially
-        show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
-        show_plot(f"SHAP SUMMARY Plot of {chosen_model} for {dataset_choice}", shap_summary_path)
-        show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+                                **Highest Features**
+                                Model: 0.3479
+                                Roadway Surface: 0.2508
+                                State: 0.1971
+                                Weather: 0.1472
+                                Lighting: 0.0568
+                                Country: 0.0003
 
-# ---------------- Supervised Learning Tab ----------------
-import streamlit as st
-import pandas as pd
-
-with tabs[4]:
-    import streamlit as st
-    from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
-
-
-    st.subheader("📈 Clustering")
-    # Dataset-specific settings
-    if dataset_choice == "UK":
-        flexible_success("UK Silhouette Score = **0.121**  |  Cluster Distribution: (0: 1729, 1: 12414, 2: 4499, 3: 4334, 4: 3)", alignment="center")
-        with st.expander("ℹ️ Table Insights"):
-                st.write("""
-                            - There are 5 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
-                            - Cluster 1 is the largest and the only cluster with BMW as a model, given it is almost identical to cluster 2 and together makes up to 72% of the dataset, however given the elbow method and silohuette peaking at 5 it is important to experiment with differents K.
-                            - The smallest cluster is clster 4 with only 3 values which is an outlier as the lattitude and longitude was 0,0 mapping the city country to Ghana making it useful to find noise and outliers using these methods 
-                            - The other key features acting within this dataset split is city with Bradford, Birmingham and Cardiff across a variety of different times from 5-8pm.
-                            - Additionally, cluster 3 is the only cluster split based on weather and wet road surface
+                                **Cluster Labelling**
+                                Cluster 0: Ford Fiesta accidents in Wales for dry accidents
+                                Cluster 1: Wet, Rainy BMW accidents within Bradford for newer accidents
+                                Cluster 2: Ford Fiesta accidents in Bradford for dry accidents
+                                Cluster 3: Ford Fiesta accidents in Birmingham for dry accidents
+                                Cluster 4: Ghana Outliers
                             """)
-        if clustering_col == "View Clustered Data":
-            csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
-            df = pd.read_csv(csv_path)
-            st.dataframe(df.head())
 
-        elif clustering_col == "K-Means":
-            st.markdown("**Showing Optimal K for UK dataset**")
-            with st.expander("ℹ️ Elbow Method Insights"):
-                st.write("""
-                    - Two methods to determine the ideal clusters other than randomsearchCV and gridsearchCV is using the elbow method and silohuette score.
-                    - The optimal k can be found using the part where inertia decreases steadily in with case around 3-5, however during this time it is important to balance it with the average  silohuette score which is mean distance to the closest cluster with scores close to 1 being well clustered, -1 to the incorrect cluster and 0 being close to the nearest boundary
-                    - Here the scores are closer to one suggesting a lower need for clusters suggesting less meaningful differences between the clusters. 
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
 
-                    - **For the UK dataset**, K=5 is chosen, while RandomSearch dicates 3/4 clusters, the silohuette score rapidly peaks at 5 which is a good indicator to experiment
-                """)
+            elif clustering_col == "PCA":
+                st.markdown("### PCA Clustering Results for K=5")
+                    # Single insights section for both plots
+                with st.expander("ℹ️ Insights"):
+                        st.write("""
+                                    - PCA plots are visual methods to find clusters by reducing the data into principal components (2 for 2D and 3 for 3D) these components try ro find the mosrt variance in the data and help see how tightly packed the clusters can be seen 
+                                    - While some points my be closer together other clusters can be classfied as outliers or how they could be part of a different cluster (with overlaps)
 
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
-            st.markdown("**Decision Trees showing Split for K=5**")
-            with st.expander("ℹ️ Insights"):
+                                    **Insights**
+                                    - The densely almost linear packed clusters can be shown However cluster 0 which is 1729 In both 2D and 3D is split across the entire dataset suggesting that these clusters can be merged with their corresponding parts making K=3 an ideal number however then Welsh accidents cluster will be removed 
+                                    - Clear cluster between the green, teal and blue can be seen, based on city as blue and teal (both Bradford accidents can be merged however then rainy weather and wet surface will be removed in cluster 1)
+                                    - The yellow outliers (ghana) is clearly displayed in this plot showing how useful the outlier detection side of clustering is
+                                                        """)
+                # Create two columns for side-by-side layout
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**2D PCA for K=5**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
+                with col2:
+                    st.markdown("**3D PCA for K=5**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
+            
+            elif clustering_col == "TSNE":
+                st.markdown("### T-SNE Clustering Results for K=3")
+                with st.expander("ℹ️ Insights"):
                     st.write("""
-                            - When using K-Means data is split into K number of cluster, we can adjust hyperparamters but we do not know why a split has occured and the percentages behind each feature. This is why a decision tree can be plotted to show the split and how each cluster is defined other than reading a table and worrying about how to label the clusters. 
-                            - A decision tree works by splititng the data based on a condition (root node) and the more layers the more splits can be made which can help trace the cluster 
-
-                            **UK Dataset Insights**
-                            - Here each colour is a cluster with (orange:0),(Teal:2),(Green:1)(pink:4)(purple:3) 
-                            - The first split is based on the model with 76.9% of vehicles being Ford Fiestas and the 23.1% being BMW and Rainy Weather
-                            - Ford Fiestas are then split based on the state/country (given England and Wales) and then Rainy weather and wet road surface to find cluster 3, given cluster 3 is also found on the right side of the tree shows there is overlap
-                            - Given the 4 layers of split the pink cluster 4 is approximated to 0.0% samples as 3/22979 is extremely small
-                            - The diagram and feature importance also highlight little variance between roadway type, speed, contact area and movement
-                            - Instead the time, date, model and model year are key contenders within the clustering 
-                            - Given the high amount of minor accidents the overpowers the clustering modes and increasing the K will reduce the silouette hence clustering may not be as useful given the data is only 10% sampled 
-
-                            **Highest Features**
-                            Model: 0.3479
-                            Roadway Surface: 0.2508
-                            State: 0.1971
-                            Weather: 0.1472
-                            Lighting: 0.0568
-                            Country: 0.0003
-
-                            **Cluster Labelling**
-                            Cluster 0: Ford Fiesta accidents in Wales for dry accidents
-                            Cluster 1: Wet, Rainy BMW accidents within Bradford for newer accidents
-                            Cluster 2: Ford Fiesta accidents in Bradford for dry accidents
-                            Cluster 3: Ford Fiesta accidents in Birmingham for dry accidents
-                            Cluster 4: Ghana Outliers
-                        """)
-
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
-
-        elif clustering_col == "PCA":
-            st.markdown("### PCA Clustering Results for K=5")
-                # Single insights section for both plots
-            with st.expander("ℹ️ Insights"):
-                    st.write("""
-                                - PCA plots are visual methods to find clusters by reducing the data into principal components (2 for 2D and 3 for 3D) these components try ro find the mosrt variance in the data and help see how tightly packed the clusters can be seen 
-                                - While some points my be closer together other clusters can be classfied as outliers or how they could be part of a different cluster (with overlaps)
-
-                                **Insights**
-                                - The densely almost linear packed clusters can be shown However cluster 0 which is 1729 In both 2D and 3D is split across the entire dataset suggesting that these clusters can be merged with their corresponding parts making K=3 an ideal number however then Welsh accidents cluster will be removed 
-                                - Clear cluster between the green, teal and blue can be seen, based on city as blue and teal (both Bradford accidents can be merged however then rainy weather and wet surface will be removed in cluster 1)
-                                - The yellow outliers (ghana) is clearly displayed in this plot showing how useful the outlier detection side of clustering is
-                                                    """)
-            # Create two columns for side-by-side layout
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**2D PCA for K=5**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
-            with col2:
-                st.markdown("**3D PCA for K=5**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
-        
-        elif clustering_col == "TSNE":
-            st.markdown("### T-SNE Clustering Results for K=3")
-            with st.expander("ℹ️ Insights"):
-                st.write("""
-                - t-SNE are another way to cluster data based on the local relationships instead of finding maxmium variance the points are placed based on their local neighbourhood relationships 
-                - This could lead to more intricate clusters compared to PCA diagram 
-                - They also help fact check the PCA diagram
-
-                **Insights**
-                - t-SNE confirms the findings with the PCA plot wit the cluster 5 outliers but the diagram is much more scattered compared to PCA
-                - Here clearer clusters between cluster 3 is found but cluster 1 and 2 seems more interconnected (Bradford accidents)
-               """)
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**2D TSNE for K=5**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
-            with col2:  # You were missing the `with col2:` statement
-                st.markdown("**3D TSNE for K=5**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
-    
-    elif dataset_choice == "US":
-        flexible_success("US Silhouette Score = **0.219**  |  Cluster Distribution: 0: 1970, 1: 1674, 2: 388", alignment="center")
-        with st.expander("ℹ️ Table Insights"):
-            st.write("""
-            - There are 3 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
-            - Clear ADAS/ADS clusters can be found showing high signs of certain characteristics being unlilke to the automation such as Make, Roadway Type, Precrash movement
-            - However the ADAS vehicles are broken into cluster itself showing vehicles such as model Y having issues with Wetter roads and Cloudy weather
-            - ADS tends to struggle more on roads with smaller speeds and commonly hitting with passengers cars however as precrash movement is stopped and contact area is back showing that 
-            they may not be at fault and the crash partner is at fault or issues with breaking 
-            """)
-        if clustering_col == "View Clustered Data":
-            csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_cluster_summary.csv"
-            df = pd.read_csv(csv_path)
-            st.dataframe(df.head())
-
-        elif clustering_col == "K-Means":
-            st.markdown("**Showing Optimal K for US dataset**")
-            with st.expander("ℹ️ Elbow Method Insights"):
-                    st.write("""
-                    - Two methods to determine the ideal clusters other than randomsearchCV and gridsearchCV is using the elbow method and silohuette score.
-                    - The optimal k can be found using the part where inertia decreases steadily in with case around 3-5, however during this time it is important to balance it with the average  silohuette score which is mean distance to the closest cluster with scores close to 1 being well clustered, -1 to the incorrect cluster and 0 being close to the nearest boundary
-                    - Here the scores are closer to one suggesting a lower need for clusters suggesting less meaningful differences between the clusters. 
-                    - **For the US dataset**, K=3 is indicated by randomsearchCV and higher silohuette score as the optimial choice, within the jupiter notebook the number of k can be experimentally changed. 
-                    """)
-
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
-            st.markdown("**Decision Trees showing Split for K=3**")
-            with st.expander("ℹ️ Insights"):
-                    st.write("""
-                    - When using K-Means data is split into K number of cluster, we can adjust hyperparamters but we do not know why a split has occured and the percentages behind each feature. This is why a decision tree can be plotted to show the split and how each cluster is defined other than reading a table and worrying about how to label the clusters. 
-                    - A decision tree works by splititng the data based on a condition (root node) and the more layers the more splits can be made which can help trace the cluster 
-                    - Here each colour is a cluster with (orange:0),(Purple:2),(Green:1) and white nodes if not 100% sure with selection
-
-
-                    **US Dataset Insight**
-                    - As expected the root node is the to do with ADAS and ADS, we view the sample split it is indeed based on 57.7% ADAS and 43.3% ADS which is exactly the same as the percentage split in the EDA giving a great opportunity see the key differences in Automation levels. 
-                    - For ADAS Clusters 0 (orange) and 2 (purple) the Speed, Weather, Model, Location are the splits, whilst Tesla Model 3 have greater accidents in dry highways in LA whilst Cluster 2 is also Tesla but Model Y on wetter, cloudy weather.
-                    - One the otherside, ADS vehicles like Jaguar I-Pace are not affected as much by weather,  accidents tend to be whilst stopped, on clear dry roads and with passenger car contacted on the back
-                    - ADS tends to struggle more on roads with smaller speeds they may not be at fault and the crash partner is at fault or issues with breaking 
-                    - While ADAS are travelling straight and hit a fixed object.
-                    - The data is pretty skewed towards California too as this is where majority of the data is, additionally within this data there is daylight lighting but accidents occuring at night which shows that cluster labelling based in mode can be skewed
-                    - With the severity being high 
-
-                    **Highest Features**
-                    ADS Equipped?: 0.7058
-                    Roadway Surface: 0.2340
-                    Weather: 0.0547
-                    City: 0.0026
-                    Model: 0.0018
-                    Automation System Engaged?: 0.0009
-                    Incident Date: 0.0001
-                    Posted Speed Limit (MPH): 0.0001
-
-                    **Cluster Labelling**
-                    - Cluster 0: ADAS Tesla Model 3 with dry highways, clear weather (Los Angeles)
-                    - Cluster 1: ADS Jaguar I-Pace with lower speeds, while parked
-                    - Cluster 2: ADAS Tesla Model Y with wet highways, clear weather (San Francisco)
-
-                    """)
-
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
-
-        elif clustering_col == "PCA":
-            st.markdown("### PCA Clustering Results for K=3")
-                # Single insights section for both plots
-            with st.expander("ℹ️ Insights"):
-                    st.write("""
-                        - PCA plots are visual methods to find clusters by reducing the data into principal components (2 for 2D and 3 for 3D) these components try ro find the mosrt variance in the data and help see how tightly packed the clusters can be seen 
-                        - While some points my be closer together other clusters can be classfied as outliers or how they could be part of a different cluster (with overlaps)
-
-                        **Insights**
-                        - The densely packed ADAS and ADS clusters can been with the green and purple clusters
-                        - However whilst the second ADAS (cluster 2)  could be recommended to be merged with cluster 0
-                        - The 3D plot helps visualise why the merge should not be merged as the X and Z axis show the road surface and weather is a seperate cluster containing both ADAS and ADS 
-                                            """)
-            # Create two columns for side-by-side layout
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**2D PCA for K=3**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
-            with col2:
-                st.markdown("**3D PCA for K=3**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
-        
-        elif clustering_col == "TSNE":
-            st.markdown("### T-SNE Clustering Results for K=3")
-            with st.expander("ℹ️ Insights"):
-                st.write("""
                     - t-SNE are another way to cluster data based on the local relationships instead of finding maxmium variance the points are placed based on their local neighbourhood relationships 
                     - This could lead to more intricate clusters compared to PCA diagram 
                     - They also help fact check the PCA diagram
 
                     **Insights**
-                    - t-SNE confirms the findings with the PCA plot showing distinct but not overfitted clusters, once again the data is largely split based on ADAS and ADS and Roadway/Weather conditions 
-                    - For the Yellow (Cluster 2) more overlap can be shown with the ADAS pink (Cluster:0)
-               """)
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**2D TSNE for K=3**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
-            with col2:  # You were missing the `with col2:` statement
-                st.markdown("**3D TSNE for K=3**")
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
-    
+                    - t-SNE confirms the findings with the PCA plot wit the cluster 5 outliers but the diagram is much more scattered compared to PCA
+                    - Here clearer clusters between cluster 3 is found but cluster 1 and 2 seems more interconnected (Bradford accidents)
+                """)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**2D TSNE for K=5**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
+                with col2:  # You were missing the `with col2:` statement
+                    st.markdown("**3D TSNE for K=5**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
+        
+        elif dataset_choice == "US":
+            flexible_success("US Silhouette Score = **0.219**  |  Cluster Distribution: 0: 1970, 1: 1674, 2: 388", alignment="center")
+            with st.expander("ℹ️ Table Insights"):
+                st.write("""
+                - There are 3 Clusters are chosen due to elbow method recommendation, here the mode can be found for each data cluster to enable cluster labelling 
+                - Clear ADAS/ADS clusters can be found showing high signs of certain characteristics being unlilke to the automation such as Make, Roadway Type, Precrash movement
+                - However the ADAS vehicles are broken into cluster itself showing vehicles such as model Y having issues with Wetter roads and Cloudy weather
+                - ADS tends to struggle more on roads with smaller speeds and commonly hitting with passengers cars however as precrash movement is stopped and contact area is back showing that 
+                they may not be at fault and the crash partner is at fault or issues with breaking 
+                """)
+            if clustering_col == "View Clustered Data":
+                csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_cluster_summary.csv"
+                df = pd.read_csv(csv_path)
+                st.dataframe(df.head())
+
+            elif clustering_col == "K-Means":
+                st.markdown("**Showing Optimal K for US dataset**")
+                with st.expander("ℹ️ Elbow Method Insights"):
+                        st.write("""
+                        - Two methods to determine the ideal clusters other than randomsearchCV and gridsearchCV is using the elbow method and silohuette score.
+                        - The optimal k can be found using the part where inertia decreases steadily in with case around 3-5, however during this time it is important to balance it with the average  silohuette score which is mean distance to the closest cluster with scores close to 1 being well clustered, -1 to the incorrect cluster and 0 being close to the nearest boundary
+                        - Here the scores are closer to one suggesting a lower need for clusters suggesting less meaningful differences between the clusters. 
+                        - **For the US dataset**, K=3 is indicated by randomsearchCV and higher silohuette score as the optimial choice, within the jupiter notebook the number of k can be experimentally changed. 
+                        """)
+
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
+                st.markdown("**Decision Trees showing Split for K=3**")
+                with st.expander("ℹ️ Insights"):
+                        st.write("""
+                        - When using K-Means data is split into K number of cluster, we can adjust hyperparamters but we do not know why a split has occured and the percentages behind each feature. This is why a decision tree can be plotted to show the split and how each cluster is defined other than reading a table and worrying about how to label the clusters. 
+                        - A decision tree works by splititng the data based on a condition (root node) and the more layers the more splits can be made which can help trace the cluster 
+                        - Here each colour is a cluster with (orange:0),(Purple:2),(Green:1) and white nodes if not 100% sure with selection
+
+
+                        **US Dataset Insight**
+                        - As expected the root node is the to do with ADAS and ADS, we view the sample split it is indeed based on 57.7% ADAS and 43.3% ADS which is exactly the same as the percentage split in the EDA giving a great opportunity see the key differences in Automation levels. 
+                        - For ADAS Clusters 0 (orange) and 2 (purple) the Speed, Weather, Model, Location are the splits, whilst Tesla Model 3 have greater accidents in dry highways in LA whilst Cluster 2 is also Tesla but Model Y on wetter, cloudy weather.
+                        - One the otherside, ADS vehicles like Jaguar I-Pace are not affected as much by weather,  accidents tend to be whilst stopped, on clear dry roads and with passenger car contacted on the back
+                        - ADS tends to struggle more on roads with smaller speeds they may not be at fault and the crash partner is at fault or issues with breaking 
+                        - While ADAS are travelling straight and hit a fixed object.
+                        - The data is pretty skewed towards California too as this is where majority of the data is, additionally within this data there is daylight lighting but accidents occuring at night which shows that cluster labelling based in mode can be skewed
+                        - With the severity being high 
+
+                        **Highest Features**
+                        ADS Equipped?: 0.7058
+                        Roadway Surface: 0.2340
+                        Weather: 0.0547
+                        City: 0.0026
+                        Model: 0.0018
+                        Automation System Engaged?: 0.0009
+                        Incident Date: 0.0001
+                        Posted Speed Limit (MPH): 0.0001
+
+                        **Cluster Labelling**
+                        - Cluster 0: ADAS Tesla Model 3 with dry highways, clear weather (Los Angeles)
+                        - Cluster 1: ADS Jaguar I-Pace with lower speeds, while parked
+                        - Cluster 2: ADAS Tesla Model Y with wet highways, clear weather (San Francisco)
+
+                        """)
+
+                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
+
+            elif clustering_col == "PCA":
+                st.markdown("### PCA Clustering Results for K=3")
+                    # Single insights section for both plots
+                with st.expander("ℹ️ Insights"):
+                        st.write("""
+                            - PCA plots are visual methods to find clusters by reducing the data into principal components (2 for 2D and 3 for 3D) these components try ro find the mosrt variance in the data and help see how tightly packed the clusters can be seen 
+                            - While some points my be closer together other clusters can be classfied as outliers or how they could be part of a different cluster (with overlaps)
+
+                            **Insights**
+                            - The densely packed ADAS and ADS clusters can been with the green and purple clusters
+                            - However whilst the second ADAS (cluster 2)  could be recommended to be merged with cluster 0
+                            - The 3D plot helps visualise why the merge should not be merged as the X and Z axis show the road surface and weather is a seperate cluster containing both ADAS and ADS 
+                                                """)
+                # Create two columns for side-by-side layout
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**2D PCA for K=3**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
+                with col2:
+                    st.markdown("**3D PCA for K=3**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
+            
+            elif clustering_col == "TSNE":
+                st.markdown("### T-SNE Clustering Results for K=3")
+                with st.expander("ℹ️ Insights"):
+                    st.write("""
+                        - t-SNE are another way to cluster data based on the local relationships instead of finding maxmium variance the points are placed based on their local neighbourhood relationships 
+                        - This could lead to more intricate clusters compared to PCA diagram 
+                        - They also help fact check the PCA diagram
+
+                        **Insights**
+                        - t-SNE confirms the findings with the PCA plot showing distinct but not overfitted clusters, once again the data is largely split based on ADAS and ADS and Roadway/Weather conditions 
+                        - For the Yellow (Cluster 2) more overlap can be shown with the ADAS pink (Cluster:0)
+                """)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**2D TSNE for K=3**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
+                with col2:  # You were missing the `with col2:` statement
+                    st.markdown("**3D TSNE for K=3**")
+                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
+        
