@@ -33,12 +33,70 @@ This included collsion and vehicle data which is split up into 2 dataset hence a
 
 ### Main structure
 - **Jupiter Notebooks:** contains the data science element and plots
-    - US_Cleaning.ipynb
-    - UK_Cleaning.ipynb
-    - EDA.ipynb (Exploratory Data analysis)
-    - FE.ipynb (feature engineering)
-    - Clustering.ipynb
-    - Supervised.ipynb
+    - *US_Cleaning.ipynb*
+        - Load and Merge Datasets based Primary Key
+        - Get basic info and missingness
+        - Reduce to latest report version
+        - Connect and merge interconnected columns
+        - Convert datatypes
+        - Remap any values
+
+    - *UK_Cleaning.ipynb*
+        - Load and Merge Datasets based Primary Key
+        - Get basic info and missingness, filter for Cars only 
+        - Remap/decode values from numbers to words
+        - reduce to latest report version
+        - Convert longitude and lattitude to  city, state, country
+        - Convert datatypes, split columns and calculate age
+        - Rename and Map values to match the US dataset
+
+    - *EDA.ipynb (Exploratory Data analysis)*
+        - Loading the datasets
+        - Look at the shape of the cleaned dataframes
+        - Split Columns based on Datatypes
+        - Percentage missingness per column and does missingness correlate with severity
+        - Numerical: Boxplot, Outliers, EDA
+        - Catergorical: Barplots and KDEs (Top 20 so legible)
+        - Datetime: Radial plot, months, year, day
+        - UK and US map 
+        - Severity stacked bar plot
+
+    - *FE.ipynb (feature engineering)*
+        - Loading the cleaned datasets
+        - Splitting Columns into Datatypes
+        - Displaying Missing Percentage per column 
+        - Dropping Values with less than 5%
+        - Defining which columns to impute
+        - Converting Numerical Speed Limit into bins of 10s
+        - Mode Imputation
+        - LOCF Imputation
+        - Random Forest Imputation *
+        - XGBoost Imputation *
+        - Jaccard Score and Accuracy *
+        - Evaluate all the imputation and choose best 
+
+    - *Clustering.ipynb*
+        - Stratfied sampling uk dataset
+        - target/ordinal/frequency encoding *
+        - K means RandomSearchCv for hyperparameter 
+        - Silohuette and Elbow methods *
+        - Decision Tree for K-Means Explainabilty
+        - PCA and TSNE *
+        - Cluster Labelling
+        
+    - *Supervised.ipynb*
+        - Load and sample the dataset 
+        - Apply SMOTE *
+        - target/ordinal/frequency encoding
+        - Hyperparameter dictionaries for randomsearch cv*
+        - Preparation and Store function* 
+        - Decision Tree
+        - Random Forest
+        - XGBoost
+        - Logistic Regression
+        - Plot the accuracy comparison (testing/validation/F1/overfitting)*
+        - SHAP
+        - LIME
 
     **Folders to store plots**
     - clustering_plots
