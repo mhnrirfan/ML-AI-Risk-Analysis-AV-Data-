@@ -12,8 +12,8 @@ import os
 from PIL import Image
 import streamlit as st
 from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
-from EDA import load_csv, prep_dates, fig_missingness, fig_boxplot
-from EDA import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
+from Functions.py import load_csv, prep_dates, fig_missingness, fig_boxplot
+from Functions.py import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
 
 
 
@@ -1641,4 +1641,3 @@ with tabs[3]:
                 with col2:  # You were missing the `with col2:` statement
                     st.markdown("**3D TSNE for K=3**")
                     st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
-        
