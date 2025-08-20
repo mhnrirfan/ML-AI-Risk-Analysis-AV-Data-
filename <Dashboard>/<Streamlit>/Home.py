@@ -1308,7 +1308,7 @@ with tabs[3]:
                     - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
 
                 **UK Insights**                
-            
+
 
                 **US Insights**                
      
@@ -1353,22 +1353,23 @@ with tabs[3]:
 
 
 
-
-
-
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
         lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
-
         if dataset_choice == "UK":
             shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
-            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx5.png")
+            lime_path_cO = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class0.png")
+            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class1.png")
+            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class2..png")
         elif dataset_choice == "US":
             shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
-            lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx5.png")
-
-    # Function to show image with title
-
+            lime_path_c0 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class0.png")
+            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class1.png")
+            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class2.png")
+            lime_path_c3 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class3.png")
+            lime_path_c4 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class4.png")
+            
+    
 
         def show_plot(title, img_path):
             if os.path.exists(img_path):
@@ -1377,11 +1378,19 @@ with tabs[3]:
                 st.image(img, use_container_width=True)  # Image scales to container width
             else:
                 st.warning(f"Image not found: {img_path}")
-
-
+        
         # Show plots sequentially
         show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
-        show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+
+        if dataset_choice == "UK":
+            for lime_path in [lime_path_c1, lime_path_c2, lime_path_c3]:
+                show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+        if dataset_choice == "US":
+            for lime_path in [lime_path_c1, lime_path_c2, lime_path_c3]:
+                show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
+
+
+
 
             # ---------------- Supervised Learning Tab ----------------
 
