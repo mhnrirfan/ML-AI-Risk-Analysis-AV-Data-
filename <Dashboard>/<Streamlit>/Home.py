@@ -1,31 +1,33 @@
-# Home.py
-
+# Filename: Functions.py 
 """
 HOW TO RUN
 cd "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/<Streamlit>"
 streamlit run Home.py
+
 """
-# Home.py
+
+# Import Neccessary Libraries =======================================================================================================================
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
 import os
 from PIL import Image
 import streamlit as st
 from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
-from Functions.py import load_csv, prep_dates, fig_missingness, fig_boxplot
-from Functions.py import get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary
+from Functions import load_csv, prep_dates, fig_missingness, fig_boxplot, get_imputation_df, plot_bar_side_by_side, plot_line_side_by_side,imputer_overall_summary, load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
+import streamlit as st
+from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning 
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 
-
-
-# ---------------- Load Data ----------------
+# Load CSV =======================================================================================================================
 UK_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
 US_data = load_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US-cleaned_data.csv")
-
-
-# ---------------- Page Config ----------------
 st.set_page_config(layout="wide", page_title="ML-AI Dashboard")
-
-# ---------------- Dark Blue + Text Styling ----------------
+st.title("🚗 ML-AI Risk Analysis Dashboard") # title
+# CSS Styling =======================================================================================================================
 st.markdown(
     """
     <style>
@@ -65,11 +67,9 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True
-)
+    )
 
-
-
-# ---------------- Sidebar ----------------
+# Sidebar =======================================================================================================================
 with st.sidebar:
     st.header("📌 Sidebar")
     with st.sidebar:
@@ -109,17 +109,17 @@ with st.sidebar:
         clustering_options = ["View Clustered Data", "K-Means","PCA","TSNE"]
         clustering_col = st.selectbox("Select Process", options=clustering_options)
 
-st.title("🚗 ML-AI Risk Analysis Dashboard")
-# ---------------- Tabs Navigation ----------------
+
+#Tabs/ Navigation =======================================================================================================================
 tabs = st.tabs([
     "🏠 Home Page",
     "📄 Dataset Information",
     "📊 Exploratory Data Analysis",
     "⚙️ Supervised Learning",
     "📈 Experimental Clustering",
-])
+    ])
 
-# ---------------- Home Tab ----------------
+# TAB 0: WELCOME =======================================================================================================================
 with tabs[0]:
     st.markdown("<h2 style='color:#1f77b4;'>Welcome!</h2>", unsafe_allow_html=True)
     st.markdown(
@@ -129,7 +129,6 @@ with tabs[0]:
         """,
         unsafe_allow_html=True
     )
-
     st.markdown("<h3 style='color:#ff7f0e;'>👩🏻‍🦱 About Me</h3>", unsafe_allow_html=True)
     st.markdown(
         """
@@ -178,15 +177,15 @@ with tabs[0]:
     st.markdown(
         """
         <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
-        - Transportation evolution: footpaths → railways → aviation.<br>
-        - Road safety is critical: <b>~1.19M deaths annually</b> ⚠️<br>
-        - Passenger vehicles have far higher accident rates than buses, trains, or planes.<br>
-        - Human error causes <b>up to 94% of accidents</b> (speeding, DUI, delayed reactions).<br>
-        - <b>Autonomous Vehicles (AVs)</b> aim to reduce accidents with:<br>
-            - 🛑 Automatic Emergency Braking (AEB)<br>
-            - 🚦 Adaptive Cruise Control (ACC)<br>
-            - ↔️ Lane switching & Automated Parking Systems (APS)<br>
-            - 📸 Sensors: Cameras, LiDAR, Radar, ultrasonic
+        - Road safety is critical:~1.19M deaths annually and lead cause for death in young people<br>
+        - With passenger vehicles have far higher accident rates than buses, trains, or planes.<br>
+        - Up to 94% of accidents use to human error  (speeding, DUI, delayed reactions).<br>
+        <br>
+        <b>Autonomous Vehicles (AVs) can reduce human error with features such as:</b> <br>
+            - Automatic Emergency Braking (AEB)<br>
+            - Adaptive Cruise Control (ACC)<br>
+            - Lane switching & Automated Parking Systems (APS)<br>
+            - Sensors: Cameras, LiDAR, Radar, ultrasonic
         </div>
         """, unsafe_allow_html=True
     )
@@ -195,59 +194,49 @@ with tabs[0]:
     st.markdown(
         """
         <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
-        - Limited <b>real-world AV crash data</b>; many studies use synthetic datasets.<br>
-        - Comparison needed: <b>ADS (fully autonomous)</b> vs <b>ADAS (assisted driving)</b>.<br>
-        - <b>SAE Levels of Automation</b>:<br>
-            - 0️⃣  Conventional vehicle<br>
-            - 1️⃣–3️⃣ ADAS: some automation, driver in control<br>
-            - 4️⃣–5️⃣ ADS: fully autonomous, no driver
+        - Limited real-world AV crash data; many studies use synthetic datasets.<br>
+        - Comparison needed: <b>ADS (fully autonomous)</b> vs <b>ADAS (assisted driving)</b>.<br><br>
+        <b>SAE Levels of Automation</b>:<br>
+            - [0] Conventional vehicle with no automation<br>
+            - [1][2][3]: some automation, driver in control<br>
+            - [4][5] ADS: fully autonomous, no driver input required
         </div>
         """, unsafe_allow_html=True
     )
     # Key Steps
-    st.markdown("<h3 style='color:#9467bd;'>🛠️ Key Steps</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#9467bd;'>🛠️ Key Steps and Aims </h3>", unsafe_allow_html=True)
     st.markdown("""
         <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
-        <b>1. 📚 Literature Review </b>– AV features, accident causes, autonomy levels, ML techniques
-       <br><b>2. 🧹 Data Cleaning</b> – remove outliers, impute missing values, normalize
-        <br><b>3. 📊 Exploratory Data Analysis</b> – distributions, correlations, patterns
-       <br><b> 4. 🤖 Supervised & Unsupervised Models</b> – implement and evaluate
-       <br><b> 5. 🔍 Explainable AI</b> – SHAP & LIME to interpret results
-       <br><b> 6. 📈 Dashboard</b> – summarize findings with insights & recommendations
+        <b>1. Literature Review </b>– AV features, accident causes, autonomy levels, ML techniques
+       <br><b>2. Data Cleaning</b> – remove outliers, impute missing values, normalize
+        <br><b>3. Exploratory Data Analysis</b> – distributions, correlations, patterns
+       <br><b> 4. Supervised & Unsupervised Models</b> – implement and evaluate
+       <br><b> 5. Explainable AI</b> – Decision Trees, SHAP & LIMEto interpret results
+       <br><b> 6. Dashboard</b> – summarize findings with insights & recommendations
         </div>
         """, unsafe_allow_html=True)
-    # Project Aim
-    st.markdown("<h3 style='color:#d62728;'>🎯 Project Aim</h3>", unsafe_allow_html=True)
-    st.markdown(
-        """
-        <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
-        - Risk analysis of <b>real-world AV accident data</b> (ADS vs ADAS).<br>
-        - Apply <b>supervised & unsupervised learning</b> to:<br>
-            - Identify accident causes & severity factors<br>
-            - Evaluate with confusion matrices, precision & recall<br>
-            - Provide insights through an <b>interactive dashboard</b><br>
-            - Employ <b>XAI methods</b> to interpret model decisions
-        </div>
-        """, unsafe_allow_html=True)
+
     # Methodology & Explainability
     st.markdown("<h3 style='color:#2ca02c;'>🧠 Methodology & Explainability</h3>", unsafe_allow_html=True)
     st.markdown(
         """
         <div style='background-color:#f2f2f2; padding:15px; border-radius:5px'>
         - <b>ML models predict accident severity:</b><br>
-            - 🌳 Decision Tree<br>
-            - 🌲 Random Forest<br>
-            - 💡 XGBoost<br>
-            - 📈 Logistic Regression<br>
-        - 🧩 Clustering Methods<br>
-        - Black-box models lack transparency → risky for public safety.<br>
-        - <b>XAI techniques:</b><br>
-            - 🔹 SHAP (SHaply Additive exPlanations)<br>
-            - 🔹 LIME (Local Interpretable Model-agnostic Explanations)
+            - Decision Tree<br>
+            - Random Forest<br>
+            - XGBoost<br>
+            - Logistic Regression<br>
+        <br>
+        <b>Clustering Methods</b><br>
+        - Black-box models lack transparency → risky for public safety.<br><br>
+
+        <b>XAI techniques:</b><br>
+            - SHAP (SHaply Additive exPlanations)<br>
+            - LIME (Local Interpretable Model-agnostic Explanations)
         </div>
         """, unsafe_allow_html=True)
 
-
+# TAB 1: DATASET INFORMATION =======================================================================================================================
 with tabs[1]:
     st.subheader("📁 Dataset Information")
 
@@ -350,22 +339,14 @@ with tabs[1]:
             st.image(
                 "https://media.istockphoto.com/id/1446301560/photo/modern-vehicle-with-ai-assisted-sensors-for-movement.webp?a=1&b=1&s=612x612&w=0&k=20&c=CtPWpGPlua1LTTPts5rCm50A0fxqDU6BxMaw1noIVTI=",
                 use_container_width=True
-            )
-    
-# ---------------- Exploratory Data Analysis Tab ----------------
-# ---------------- Exploratory Data Analysis Tab ----------------
-with tabs[2]:
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import plotly.express as px
-    import numpy as np
-    import pandas as pd
-    from EDA import load_csv, plot_uk_choropleth, plot_us_state_choropleth, plot_severity_stacked,plot_adas_ads_pie
+            ) 
 
+# TAB 2: EDA =======================================================================================================================
+with tabs[2]:
     st.markdown(
     "<h2 style='font-size:32px; font-weight:900;'>Exploratory Data Analysis (EDA)</h2>",
     unsafe_allow_html=True
-)
+    )
     # ---------------- Sidebar Settings ----------------
     st.markdown(
     "<h5 style='margin-top:0;'>Key Risk Metrics</h5>", 
@@ -434,11 +415,7 @@ with tabs[2]:
     # ---------------- Color Palettes ----------------
     pastel_rainbow = ['#FFB3BA','#FFDFBA','#FFFFBA','#BAFFC9','#BAE1FF','#D9BAFF','#FFBAE1']
     severity_colors = px.colors.sequential.Blues
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-    import plotly.graph_objects as go
-    import seaborn as sns
+
 
     # --- Define chart heights ---
     CHART_HEIGHT = 400
@@ -465,7 +442,7 @@ with tabs[2]:
         )
 
         # --- 3 Columns ---
-        col1, col2, col3 = st.columns([0.25, 0.35, 0.4])
+        col1, col2, col3 = st.columns([0.25, 0.35, 0.4]) # proportion to 
 
         # --- ADAS Pie Chart ---
         with col1:
@@ -844,13 +821,8 @@ with tabs[2]:
 
 
     # ---------------- Clustering Tab ----------------
-import pandas as pd
-import streamlit as st
 
-# Load datasets once
-UK_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK-cleaned_data.csv")
-US_data = pd.read_csv("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_imputed_data.csv")
-
+# TAB 3: SUPERVISED  =======================================================================================================================
 with tabs[3]:
     st.subheader("⚙️ Supervised Learning")
     # View Data section
@@ -962,7 +934,7 @@ with tabs[3]:
         'solver': ['lbfgs', 'saga'],
         'l1_ratio': [0, 0.5, 1]  # only used if penalty='elasticnet'
     }
-}
+    }
     if supervised_col == "Hyperparameters" and chosen_model:
 
         # Map the winner params based on dataset_choice and chosen_model
@@ -995,10 +967,6 @@ with tabs[3]:
         )
     
     if supervised_col == "Results" and chosen_model:
-        import streamlit as st
-        import pandas as pd
-        from PIL import Image
-        import matplotlib.pyplot as plt
 
         # -----------------------------
         # Classification Reports
@@ -1060,7 +1028,7 @@ with tabs[3]:
             "support": [48, 30, 6, 304, 16, 404, 404, 404]
         }, index=["0", "1", "2", "3", "4", "accuracy", "macro avg", "weighted avg"])
     
-# --------uk classfication report 
+        # --------uk classfication report 
         dt_uk_test_report_df = pd.DataFrame({
             "precision": [0.04, 0.79, 0.22, 0.58, 0.35, 0.66],
             "recall": [0.25, 0.67, 0.25, 0.58, 0.39, 0.58],
@@ -1308,9 +1276,6 @@ with tabs[3]:
                             """)
 
 
-            import streamlit as st
-            from PIL import Image
-
             # Create two columns for Test and Validation
             col1, col2 = st.columns(2)
 
@@ -1339,8 +1304,45 @@ with tabs[3]:
         if chosen_model == "Decision Tree":
             with st.expander("ℹ️ Insights"):
                 st.write("""
-                - SHAP 
-                - LIME 
+                    - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
+                    - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
+
+                **UK Insights**                
+            
+
+                **US Insights**                
+     
+                """)
+
+        if chosen_model == "Random Forest":
+            with st.expander("ℹ️ Insights"):
+                st.write("""
+                - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
+                - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
+
+                **UK Insights**                
+
+
+                **US Insights**                
+     
+                """)
+        if chosen_model == "XGBoost":
+            with st.expander("ℹ️ Insights"):
+                st.write("""
+            - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
+            - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
+
+                **UK Insights**                
+
+
+                **US Insights**                
+     
+                """)
+        if chosen_model == "Logistic Regression":
+            with st.expander("ℹ️ Insights"):
+                st.write("""
+                - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
+                - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
 
                 **UK Insights**                
 
@@ -1354,24 +1356,19 @@ with tabs[3]:
 
 
 
-
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
         lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
 
         if dataset_choice == "UK":
             shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
-            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_UK.png")
             lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx5.png")
         elif dataset_choice == "US":
             shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
-            shap_summary_path = os.path.join(shap_base_path, f"{chosen_model}_summary_US.png")
             lime_path = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx5.png")
 
     # Function to show image with title
-        import os
-        from PIL import Image
-        import streamlit as st
+
 
         def show_plot(title, img_path):
             if os.path.exists(img_path):
@@ -1384,14 +1381,11 @@ with tabs[3]:
 
         # Show plots sequentially
         show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
-        show_plot(f"SHAP SUMMARY Plot of {chosen_model} for {dataset_choice}", shap_summary_path)
         show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
 
             # ---------------- Supervised Learning Tab ----------------
 
-        
-        import plotly.express as px
-        import pandas as pd
+
         if dataset_choice == "US":
             st.title("US Model Accuracy Comparison")
             # Example dataframe: 4 models, Test & Validation accuracy
@@ -1429,10 +1423,9 @@ with tabs[3]:
         )
 
         st.plotly_chart(fig, use_container_width=True)
-    with tabs[4]:
-        import streamlit as st
-        from st_flexible_callout_elements import flexible_error, flexible_success, flexible_warning, flexible_info
 
+# TAB 4: CLUSTERING =======================================================================================================================
+with tabs[4]:
 
         st.subheader("📈 Clustering")
         # Dataset-specific settings

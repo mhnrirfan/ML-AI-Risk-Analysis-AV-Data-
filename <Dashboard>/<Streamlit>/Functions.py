@@ -1,36 +1,36 @@
+# Filename: Functions.py 
+"""
+Description: Some functions i experimented with seperately and then imported into home.py
+"""
+
+# Import necessary libraries
+import streamlit as st
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 from shapely.geometry import Point
-# EDA.py
+from plotly.subplots import make_subplots
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 
+### Loading CSV
 def load_csv(path):
     return pd.read_csv(path)
-
+### Loading CSV
 def prep_dates(df, date_columns):
     for col in date_columns:
         df[col] = pd.to_datetime(df[col], errors='coerce')
     return df
-
+### Loading CSV
 def fig_missingness(df):
     fig = sns.heatmap(df.isna(), cbar=False)
     return fig
-
+### Show boxplot
 def fig_boxplot(df, col):
     fig = sns.boxplot(x=df[col])
     return fig
-
-# ---------------------------
-# UK Choropleth Map
-# ---------------------------
-import geopandas as gpd
-from shapely.geometry import Point
-import plotly.express as px
-
+### Show UK Cholopleth Map
 def plot_uk_choropleth():
     # Example choropleth figure
     fig = px.choropleth(...)  # your actual plotting code here
@@ -40,10 +40,7 @@ def plot_uk_choropleth():
     
     # Return the figure object
     return fig
-
-# ---------------------------
-# US State Choropleth
-# ---------------------------
+### Show US Cholopleth Map
 def plot_us_state_choropleth(US_data):
     US_data['State'] = US_data['State'].astype(str).str.strip().str.upper()
     state_counts = US_data['State'].value_counts().reset_index()
@@ -58,15 +55,8 @@ def plot_us_state_choropleth(US_data):
         scope='usa',
     )
     return fig
-
-# ---------------------------
-# Severity Analysis for Categorical Columns
-# ---------------------------
+### Create interactive UK Cholopleth Map changeable n and column
 def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury Severity Alleged', top_n=10, title_prefix='Data'):
-    import plotly.express as px
-    import pandas as pd
-    import seaborn as sns
-
     # Convert all categorical columns to string
     for col in categorical_columns:
         if col in df.columns:
@@ -127,10 +117,7 @@ def plot_severity_stacked(df, categorical_columns, severity_col='Highest Injury 
         figs.append(fig)
 
     return figs
-
-
-
-
+### Pie for ADAS/ADS
 def plot_adas_ads_pie(df, dataset_label, st, chart_height=400):
     if 'Automation System Engaged?' not in df.columns:
         st.warning(f"'Automation System Engaged?' column not found in {dataset_label} dataset.")
@@ -146,12 +133,10 @@ def plot_adas_ads_pie(df, dataset_label, st, chart_height=400):
         color_discrete_sequence=pastel_colors,
         hole=0.3
     )
-
     fig.update_traces(
         textinfo='percent+label',
         hovertemplate="<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>"
     )
-
     fig.update_layout(
         paper_bgcolor='white',
         plot_bgcolor='white',
@@ -160,11 +145,7 @@ def plot_adas_ads_pie(df, dataset_label, st, chart_height=400):
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-# ----- SU
-import pandas as pd
-import plotly.express as px
-
+### Imputer Values to plot
 def get_imputation_df():
     """Return the hardcoded imputation comparison dataframe."""
     data = {
@@ -183,12 +164,7 @@ def get_imputation_df():
         "XGB_Jaccard": [28.2, 36.5, 21.3, 54.9, 31.3, 18.0, 19.3, 65.5, 42.4]
     }
     return pd.DataFrame(data)
-
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import pandas as pd
-import plotly.express as px
-
+### Jaccard and Accuracy plots for imputer
 def plot_bar_side_by_side(df):
     """
     Creates a single figure with Accuracy and Jaccard bar charts side by side.
@@ -202,7 +178,6 @@ def plot_bar_side_by_side(df):
                      var_name="Imputer", value_name="Value")
 
     fig = make_subplots(rows=1, cols=2, subplot_titles=("Accuracy (%)", "Jaccard (%)"))
-
     # Accuracy bars
     for imputer in df_acc['Imputer'].unique():
         df_tmp = df_acc[df_acc['Imputer'] == imputer]
@@ -210,7 +185,6 @@ def plot_bar_side_by_side(df):
             go.Bar(x=df_tmp['Column'], y=df_tmp['Value'], name=imputer, text=df_tmp['Value']),
             row=1, col=1
         )
-
     # Jaccard bars (do not duplicate legend)
     for imputer in df_jac['Imputer'].unique():
         df_tmp = df_jac[df_jac['Imputer'] == imputer]
@@ -218,7 +192,6 @@ def plot_bar_side_by_side(df):
             go.Bar(x=df_tmp['Column'], y=df_tmp['Value'], name=imputer, text=df_tmp['Value'], showlegend=True, legendgroup=imputer),
             row=1, col=2
         )
-
     fig.update_layout(
     title=dict(
         text="Imputation Accuracy & Jaccard Comparison",
@@ -233,11 +206,9 @@ def plot_bar_side_by_side(df):
     yaxis=dict(title_font=dict(color="black"), tickfont=dict(color="black")),
     yaxis2=dict(title_font=dict(color="black"), tickfont=dict(color="black")),
     legend=dict(title=dict(text="Imputer", font=dict(color="black")), font=dict(color="black"))
-)
-
-
+    )
     return fig
-
+### Jaccard and Accuracy plots for imputer
 def plot_line_side_by_side(df):
     """
     Creates a shaded line chart for Accuracy & Jaccard trends.
@@ -246,14 +217,11 @@ def plot_line_side_by_side(df):
                      value_vars=["Mode_Accuracy", "RF_Accuracy", "LOCF_Accuracy", "XGB_Accuracy"],
                      var_name="Imputer", value_name="Value")
     df_acc["Metric"] = "Accuracy"
-
     df_jac = df.melt(id_vars="Column", 
                      value_vars=["Mode_Jaccard", "RF_Jaccard", "LOCF_Jaccard", "XGB_Jaccard"],
                      var_name="Imputer", value_name="Value")
     df_jac["Metric"] = "Jaccard"
-
     df_all = pd.concat([df_acc, df_jac])
-
     fig = px.line(df_all, x="Column", y="Value", color="Imputer", facet_row="Metric", markers=True)
     fig.update_traces(mode="lines+markers", line_shape="spline", fill='tozeroy')
 
@@ -275,13 +243,8 @@ def plot_line_side_by_side(df):
         yaxis=dict(title_font=dict(color="black"), tickfont=dict(color="black")),
         yaxis2=dict(title_font=dict(color="black"), tickfont=dict(color="black"))
     )
-
     return fig
-
-
-import streamlit as st
-import pandas as pd
-
+### Table for imputer
 def imputer_overall_summary(df):
     """
     Returns a summary of the best imputer model based on average Accuracy and Jaccard.
