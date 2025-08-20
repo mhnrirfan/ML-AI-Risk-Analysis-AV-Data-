@@ -1300,6 +1300,41 @@ with tabs[3]:
                     st.image(cm_image, use_container_width=True)
 
 
+        if dataset_choice == "US":
+            st.title("US Model Accuracy Comparison")
+            accuracy_data = pd.DataFrame({
+                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+                "Test": [0.705081, 0.799257, 0.817844, 0.475836],
+                "Validation": [0.712871, 0.806931, 0.811881, 0.490099]
+            })
+        if dataset_choice == "UK":
+            st.title("UK Model Accuracy Comparison")
+            accuracy_data = pd.DataFrame({
+                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
+                "Test": [0.576239, 0.692488, 0.657782, 0.461513],
+                "Validation": [0.576480, 0.697237, 0.655461, 0.453220]
+            })
+
+        accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
+                                        var_name="Dataset Split", value_name="Accuracy")
+
+        fig = px.bar(
+            accuracy_long,
+            x="Model",
+            y="Accuracy",
+            color="Dataset Split",
+            barmode="group",  # side-by-side bars
+            text="Accuracy",  # shows numbers on hover
+            title="Training and Validation Accuracy for All Models"
+        )
+
+        fig.update_layout(
+            yaxis=dict(range=[0, 1]),  # fix y-axis from 0 to 1
+            legend_title_text='Dataset Split'
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
         st.title(f"**Explainability Plots of {chosen_model} for {dataset_choice}**")
         if chosen_model == "Decision Tree":
             with st.expander("ℹ️ Insights"):
@@ -1352,24 +1387,9 @@ with tabs[3]:
                 """)
 
 
-
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
         lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
 
-        if dataset_choice == "UK":
-            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
-            lime_path_cO = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class0.png")
-            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class1.png")
-            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class2..png")
-        elif dataset_choice == "US":
-            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
-            lime_path_c0 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class0.png")
-            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class1.png")
-            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class2.png")
-            lime_path_c3 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class3.png")
-            lime_path_c4 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class4.png")
-            
-    
 
         def show_plot(title, img_path):
             if os.path.exists(img_path):
@@ -1379,59 +1399,27 @@ with tabs[3]:
             else:
                 st.warning(f"Image not found: {img_path}")
         
-        # Show plots sequentially
-        show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
+        
 
         if dataset_choice == "UK":
-            for lime_path in [lime_path_c1, lime_path_c2, lime_path_c3]:
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
+            show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
+            lime_path_c0 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class0.png")
+            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class1.png")
+            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_UK_idx0_class2.png")
+            for lime_path in [lime_path_c0,lime_path_c1, lime_path_c2]:
                 show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
-        if dataset_choice == "US":
-            for lime_path in [lime_path_c1, lime_path_c2, lime_path_c3]:
+        elif dataset_choice == "US":
+            shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_US.png")
+            show_plot(f"SHAP BAR Plot of {chosen_model} for {dataset_choice}", shap_bar_path)
+            lime_path_c0 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class0.png")
+            lime_path_c1 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class1.png")
+            lime_path_c2 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class2.png")
+            lime_path_c3 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class3.png")
+            lime_path_c4 = os.path.join(lime_base_path, f"LIME_{chosen_model}_US_idx0_class4.png")
+            for lime_path in [lime_path_c0,lime_path_c1, lime_path_c2, lime_path_c3,lime_path_c4]:
                 show_plot(f"LIME Plot of {chosen_model} for {dataset_choice}", lime_path)
-
-
-
-
-            # ---------------- Supervised Learning Tab ----------------
-
-
-        if dataset_choice == "US":
-            st.title("US Model Accuracy Comparison")
-            # Example dataframe: 4 models, Test & Validation accuracy
-            accuracy_data = pd.DataFrame({
-                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
-                "Test": [0.705081, 0.799257, 0.817844, 0.475836],
-                "Validation": [0.712871, 0.806931, 0.811881, 0.490099]
-            })
-        if dataset_choice == "UK":
-            st.title("UK Model Accuracy Comparison")
-            accuracy_data = pd.DataFrame({
-                "Model": ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"],
-                "Test": [0.576239, 0.692488, 0.657782, 0.461513],
-                "Validation": [0.576480, 0.697237, 0.655461, 0.453220]
-            })
-
-        # Melt dataframe to long format so PX can handle it
-        accuracy_long = accuracy_data.melt(id_vars="Model", value_vars=["Test", "Validation"],
-                                        var_name="Dataset Split", value_name="Accuracy")
-
-        # Interactive bar chart
-        fig = px.bar(
-            accuracy_long,
-            x="Model",
-            y="Accuracy",
-            color="Dataset Split",
-            barmode="group",  # side-by-side bars
-            text="Accuracy",  # shows numbers on hover
-            title="Training and Validation Accuracy for All Models"
-        )
-
-        fig.update_layout(
-            yaxis=dict(range=[0, 1]),  # fix y-axis from 0 to 1
-            legend_title_text='Dataset Split'
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
+            
 
 # TAB 4: CLUSTERING =======================================================================================================================
 with tabs[4]:
