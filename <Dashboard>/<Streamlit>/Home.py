@@ -1336,55 +1336,48 @@ with tabs[3]:
         st.plotly_chart(fig, use_container_width=True)
 
         st.title(f"**Explainability Plots of {chosen_model} for {dataset_choice}**")
-        if chosen_model == "Decision Tree":
+        if dataset_choice == "US":
+            with st.expander("ℹ️ Insights"):
+                st.write("""
+                - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
+                - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
+
+                **US Insights**  
+                **SHAP**
+                0 Pink: Minor
+                1 Purple: Serious
+                2 Green: Fatality
+                3 Blue: No injury
+                4 Yellow: Moderate
+                - For all classes the make is important, however for the more severe accidents (purple and green) the speed limit is extremely important as the higher the speed the more it comes into effect when deciding severity class
+                -While state was a high importance factor in clustering and feature engineering it has equal weighting for deciding which class as due to large amount of accidents in california there is no variance for it to have larger impact. 
+                - Logistic regression which has the lowest accuracy also uses the least features when making decisions showing the lack of understanding complex relations as it highly depends on make, state, city and model when weather and road surface should also be considered
+
+                **LIME**  
+                - For minor accidents the speed limit is less than 40 mph which is expected, additonally the make, ADS, Crash all postively contribute to the accident for decision trees
+                - Additonally for fatalitiy it is clear the model year and ADS make a big different as ADS makes more difference than model
+                - For classes 1,2,3 which are more distinct in severity such as no injury at or serious fatality ADS Equipped is a much bigger factor in random forest
+                - However for the most accurate model ADS equipped is not the biggest explaination rather focusing on make for lower severity and ADS only for fatality showing clearly the the level of automation
+                """)
+            
+        if dataset_choice == "UK":
             with st.expander("ℹ️ Insights"):
                 st.write("""
                     - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
                     - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
+           
+                **UK Insights**  
+                **SHAP**
+                0 Blue: Fatality
+                1 Green: Minor
+                2 Pink: Serious
+                - Decision trees unlike the logestic regression  have more features involved but random forest have more average impact due to using multiple trees. 
+                - XGBoost has even higher impact for all features as the max shap value jumps from 0.25 to 1.4 
+                - Logistic regression has the highest model average output however this is due to the high bias towards the make, and for some bars the classes are not even included
 
-                **UK Insights**                
-
-
-                **US Insights**                
-     
-                """)
-
-        if chosen_model == "Random Forest":
-            with st.expander("ℹ️ Insights"):
-                st.write("""
-                - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
-                - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
-
-                **UK Insights**                
-
-
-                **US Insights**                
-     
-                """)
-        if chosen_model == "XGBoost":
-            with st.expander("ℹ️ Insights"):
-                st.write("""
-            - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
-            - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
-
-                **UK Insights**                
-
-
-                **US Insights**                
-     
-                """)
-        if chosen_model == "Logistic Regression":
-            with st.expander("ℹ️ Insights"):
-                st.write("""
-                - **SHAP**: bar chart to show which features are most important for predicitng models outputs, in this example the classes importance per feature can be found as the data is multiclass it is better to creata a bar plot of importance rather than an interaction beewarm matrix
-                - **LIME**: explainations for how a machine learning models made a specific prediction for a certain class (for instance fatality or minor), locally you can pick one data point and see which features postively or negatively influenced the prediction 
-
-                **UK Insights**                
-
-
-                **US Insights**                
-     
-                """)
+                **LIME** 
+                - roadway time is a key factor for fatal and serious accidents with speeds higher than 56.18% suggesting overspeeding / motorway accidents
+                - Minor accidents the speeds are less and the city and contact area are postively influenced """)
 
 
         shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
