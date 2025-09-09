@@ -1,0 +1,4 @@
+Cluster,Make,Model,Model Year,ADS Equipped?,Automation System Engaged?,Incident Date,Incident Time (24:00),City,State,Roadway Type,Roadway Surface,Posted Speed Limit (MPH),Lighting,Crash With,Highest Injury Severity Alleged,SV Pre-Crash Movement,Weather,SV Contact Area,Country
+0,Tesla,Model 3,2021.2527918781725,No,ADAS,2025-10-24,02:28:00,Los Angeles,CA ,Highway / Freeway,Dry,53.20812182741117,Daylight,Other Fixed Object,No Injuries Reported,Proceeding Straight,Clear,Front,US
+1,Jaguar,I-Pace,2021.9695340501792,Yes,ADS,2025-04-20,23:30:00,San Francisco,CA ,Street,Dry,27.114695340501793,Daylight,Passenger Car,No Injuries Reported,Stopped,Clear,Back,US
+2,Tesla,Model Y,2021.270618556701,No,ADAS,2025-12-22,01:33:00,San Francisco,CA ,Highway / Freeway,Wet,53.402061855670105,Daylight,Other Fixed Object,No Injuries Reported,Proceeding Straight,"Cloudy, Rain",Front,US

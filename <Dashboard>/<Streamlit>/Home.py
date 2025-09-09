@@ -1392,7 +1392,6 @@ with tabs[3]:
             else:
                 st.warning(f"Image not found: {img_path}")
         
-        
 
         if dataset_choice == "UK":
             shap_bar_path = os.path.join(shap_base_path, f"{chosen_model}_bar_UK.png")
