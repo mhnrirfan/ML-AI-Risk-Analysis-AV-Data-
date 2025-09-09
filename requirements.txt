@@ -9,6 +9,7 @@ shap
 lime
 st-flexible-callout-elements
 seaborn
+plotly>=5.0.0
 # Geopandas
 geopandas
 shapely
