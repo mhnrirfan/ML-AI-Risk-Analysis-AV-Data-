@@ -8,7 +8,7 @@ scikit-learn
 shap
 lime
 st-flexible-callout-elements
-
+seaborn as sns
 # Geopandas
 geopandas
 shapely
