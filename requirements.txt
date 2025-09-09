@@ -9,3 +9,9 @@ shap
 matplotlib
 seaborn
 st-flexible-callout-elements
+geopandas
+shapely
+fiona
+pyproj
+rtree
+
