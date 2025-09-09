@@ -1,4 +1,4 @@
-# Filename: Functions.py 
+ML-AI-Risk-AnalysisML-AI-Risk-Analysis# Filename: Functions.py 
 """
 HOW TO RUN
 cd "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/<Streamlit>"
@@ -1430,7 +1430,7 @@ with tabs[4]:
                                 - Additionally, cluster 3 is the only cluster split based on weather and wet road surface
                                 """)
             if clustering_col == "View Clustered Data":
-                csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/UK_cluster_summary.csv"
+                csv_path = "Datasets/UK_cluster_summary.csv"
                 df = pd.read_csv(csv_path)
                 st.dataframe(df.head())
 
@@ -1445,7 +1445,7 @@ with tabs[4]:
                         - **For the UK dataset**, K=5 is chosen, while RandomSearch dicates 3/4 clusters, the silohuette score rapidly peaks at 5 which is a good indicator to experiment
                     """)
 
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
+                st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_plot.png")
                 st.markdown("**Decision Trees showing Split for K=5**")
                 with st.expander("ℹ️ Insights"):
                         st.write("""
