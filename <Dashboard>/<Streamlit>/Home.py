@@ -5,6 +5,15 @@ cd "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>
 streamlit run Home.py
 
 """
+import os
+
+# Base path for datasets (adjust if needed)
+BASE_PATH = os.path.join(os.path.dirname(__file__), "../../")  # points to project root
+
+def load_csv(path):
+    full_path = os.path.join(BASE_PATH, path.lstrip("/"))  # prepend base path
+    return pd.read_csv(full_path)
+
 
 # Import Neccessary Libraries =======================================================================================================================
 import streamlit as st
