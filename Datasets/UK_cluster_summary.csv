@@ -1,6 +1,3 @@
-Cluster,Make,Model,Model Year,ADS Equipped?,Automation System Engaged?,Incident Date,Incident Time (24:00),City,State,Roadway Type,Roadway Surface,Posted Speed Limit (MPH),Lighting,Crash With,Highest Injury Severity Alleged,SV Pre-Crash Movement,Weather,SV Contact Area,Country
-0,FORD,FIESTA,2012.7171775592828,Conventional,Conventional,2019-01-09,20:00:00,Cardiff,Wales,Single carriageway,Dry,30.0,Daylight,No Object,Minor,Going ahead other,Clear,Front,United Kingdom
-1,BMW,3 SERIES,2012.2592234573867,Conventional,Conventional,2021-06-11,17:00:00,Bradford,England,Single carriageway,Dry,30.0,Daylight,No Object,Minor,Going ahead other,Clear,Front,United Kingdom
-2,FORD,FIESTA,2010.5036674816627,Conventional,Conventional,2020-09-17,16:00:00,Bradford,England,Single carriageway,Dry,30.0,Daylight,No Object,Minor,Going ahead other,Clear,Front,United Kingdom
-3,FORD,FIESTA,2011.6093677895708,Conventional,Conventional,2019-06-10,18:00:00,Birmingham,England,Single carriageway,Wet,30.0,Daylight,No Object,Minor,Going ahead other,Raining no high winds,Front,United Kingdom
-4,AUDI,IBIZA,2017.3333333333333,Conventional,Conventional,2021-11-13,15:05:00,Takoradi,Western,Single carriageway,Dry,30.0,Dark - Lighted,No Object,Minor,Going ahead other,Clear,Front,Ghana
+version https://git-lfs.github.com/spec/v1
+oid sha256:0fd7ea37a550792d66f9d05e20e5b2098220a22b6fe85070d15cf51778234071
+size 1260
