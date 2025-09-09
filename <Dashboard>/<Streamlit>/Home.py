@@ -1,8 +1,8 @@
 # Filename: Functions.py 
 """
 HOW TO RUN
-cd "<Dashboard>/<Streamlit>"
-streamlit run Home.py
+https://mahnooriqbal.streamlit.app
+
 
 """
 
