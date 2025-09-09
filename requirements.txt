@@ -7,3 +7,5 @@ xgboost
 lime
 shap
 matplotlib
+seaborn
+st-flexible-callout-elements
