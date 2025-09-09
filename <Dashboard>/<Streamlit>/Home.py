@@ -1,7 +1,7 @@
 ML-AI-Risk-AnalysisML-AI-Risk-Analysis# Filename: Functions.py 
 """
 HOW TO RUN
-cd "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/<Streamlit>"
+cd "<Dashboard>/<Streamlit>"
 streamlit run Home.py
 
 """
@@ -309,11 +309,11 @@ with tabs[1]:
     # -----------------------
     with st.expander("🧹 Show Data Cleaning Script", expanded=False):
         if dataset_choice == "UK":
-            with open("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Python Scripts>/UK_Cleaning.py") as f:
+            with open("<Python Scripts>/UK_Cleaning.py") as f:
                 code = f.read()
             st.code(code, language="python")
         else:
-            with open("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Python Scripts>/US_Cleaning.py") as f:
+            with open("<Python Scripts>/US_Cleaning.py") as f:
                 code = f.read()
             st.code(code, language="python")
 
@@ -681,7 +681,7 @@ with tabs[2]:
         if dataset_choice == 'UK':
             
             st.image(
-                "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/EDA_FE/UK_incidents_choropleth.png",
+                "<Jupiter Notebooks>/EDA_FE/UK_incidents_choropleth.png",
             )
 
 
@@ -801,9 +801,9 @@ with tabs[2]:
             - Additionally the negative correlations with lighting, city and precrash movementas these can increasing the severity""")
         col1, col2 = st.columns(2)
         with col1:
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/EDA_FE/UK_heatmap.png", use_container_width=True)
+            st.image("<Jupiter Notebooks>/EDA_FE/UK_heatmap.png", use_container_width=True)
         with col2:
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/EDA_FE/UK_top_corr_bar.png", use_container_width=True)
+            st.image("<Jupiter Notebooks>/EDA_FE/UK_top_corr_bar.png", use_container_width=True)
     
     
     elif dataset_choice == 'US':
@@ -816,9 +816,9 @@ with tabs[2]:
             - Additionally the negative correlations with Speed limit, Make, Surface can increase chances of an accident given higher speed limits, wetter surfaces and certain models have are where more severe accidents occur""")
         col1, col2 = st.columns(2)
         with col1:
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/EDA_FE/US_heatmap.png", use_container_width=True)
+            st.image("<Jupiter Notebooks>/EDA_FE/US_heatmap.png", use_container_width=True)
         with col2:
-            st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/EDA_FE/US_top_corr_bar.png", use_container_width=True)
+            st.image("<Jupiter Notebooks>/EDA_FE/US_top_corr_bar.png", use_container_width=True)
 
 
     # ---------------- Clustering Tab ----------------
@@ -1133,7 +1133,7 @@ with tabs[3]:
         # -----------------------------
         # Confusion Matrices Paths
         # -----------------------------
-        base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/model_evaluation/"
+        base_path = "<Jupiter Notebooks>/model_evaluation/"
 
         confusion_matrix_paths = {}
         for model in ["Decision Tree", "Random Forest", "XGBoost", "Logistic Regression"]:
@@ -1381,8 +1381,8 @@ with tabs[3]:
                 - Minor accidents the speeds are less and the city and contact area are postively influenced """)
 
 
-        shap_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/shap_plots"
-        lime_base_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/lime_explanations"
+        shap_base_path = "<Jupiter Notebooks>/shap_plots"
+        lime_base_path = "<Jupiter Notebooks>/lime_explanations"
 
 
         def show_plot(title, img_path):
@@ -1477,7 +1477,7 @@ with tabs[4]:
                                 Cluster 4: Ghana Outliers
                             """)
 
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
+                st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_explainability.png")
 
             elif clustering_col == "PCA":
                 st.markdown("### PCA Clustering Results for K=5")
@@ -1496,10 +1496,10 @@ with tabs[4]:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**2D PCA for K=5**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_2d.png")
                 with col2:
                     st.markdown("**3D PCA for K=5**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_pca_3d.png")
             
             elif clustering_col == "TSNE":
                 st.markdown("### T-SNE Clustering Results for K=3")
@@ -1516,10 +1516,10 @@ with tabs[4]:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**2D TSNE for K=5**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_2d.png")
                 with col2:  # You were missing the `with col2:` statement
                     st.markdown("**3D TSNE for K=5**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/UK Dataset_tsne_3d.png")
         
         elif dataset_choice == "US":
             flexible_success("US Silhouette Score = **0.219**  |  Cluster Distribution: 0: 1970, 1: 1674, 2: 388", alignment="center")
@@ -1532,7 +1532,7 @@ with tabs[4]:
                 they may not be at fault and the crash partner is at fault or issues with breaking 
                 """)
             if clustering_col == "View Clustered Data":
-                csv_path = "/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/Datasets/US_cluster_summary.csv"
+                csv_path = "Datasets/US_cluster_summary.csv"
                 df = pd.read_csv(csv_path)
                 st.dataframe(df.head())
 
@@ -1546,7 +1546,7 @@ with tabs[4]:
                         - **For the US dataset**, K=3 is indicated by randomsearchCV and higher silohuette score as the optimial choice, within the jupiter notebook the number of k can be experimentally changed. 
                         """)
 
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
+                st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_plot.png")
                 st.markdown("**Decision Trees showing Split for K=3**")
                 with st.expander("ℹ️ Insights"):
                         st.write("""
@@ -1581,7 +1581,7 @@ with tabs[4]:
 
                         """)
 
-                st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
+                st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_explainability.png")
 
             elif clustering_col == "PCA":
                 st.markdown("### PCA Clustering Results for K=3")
@@ -1600,10 +1600,10 @@ with tabs[4]:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**2D PCA for K=3**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_pca_2d.png")
                 with col2:
                     st.markdown("**3D PCA for K=3**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_pca_3d.png")
             
             elif clustering_col == "TSNE":
                 st.markdown("### T-SNE Clustering Results for K=3")
@@ -1620,7 +1620,7 @@ with tabs[4]:
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**2D TSNE for K=3**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_2d.png")
                 with col2:  # You were missing the `with col2:` statement
                     st.markdown("**3D TSNE for K=3**")
-                    st.image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
+                    st.image("<Jupiter Notebooks>/clustering_plots/US Dataset_tsne_3d.png")
