@@ -1,17 +1,19 @@
+# Main
 streamlit
 plotly
+matplotlib
 pandas
 numpy
 scikit-learn
-xgboost
-lime
 shap
-matplotlib
-seaborn
+lime
 st-flexible-callout-elements
+
+# Geopandas
 geopandas
 shapely
-fiona
 pyproj
+fiona
 rtree
+
 
