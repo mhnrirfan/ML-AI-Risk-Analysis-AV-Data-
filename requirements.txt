@@ -1,0 +1,17 @@
+# Main
+streamlit
+plotly
+matplotlib
+pandas
+numpy
+scikit-learn
+shap
+lime
+st-flexible-callout-elements
+seaborn
+# Geopandas
+geopandas
+shapely
+pyproj
+fiona
+rtree
