@@ -36,7 +36,7 @@ def plot_uk_choropleth():
     fig = px.choropleth(...)  # your actual plotting code here
     
     # Save figure to file
-    fig.write_image("/Users/mahnooriqbal/COMP702 Project/ML-AI-Risk-Analysis-AV-Data-/<Dashboard>/UK_incidents_choropleth.png")
+    fig.write_image("<Dashboard>/UK_incidents_choropleth.png")
     
     # Return the figure object
     return fig
